@@ -1,10 +1,12 @@
-import React,{Component} from 'react';
+import React from 'react';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-import '../styles/mainPage.css';
+import '../styles/main.less';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
-class MainPage extends Component{
+class Main extends React.Component{
+
+      
     render(){
         return(
         <Layout>
@@ -16,9 +18,9 @@ class MainPage extends Component{
         defaultSelectedKeys={['2']}
         style={{ lineHeight: '64px' }}
       >
-        <Menu.Item key="1">nav 1</Menu.Item>
-        <Menu.Item key="2">nav 2</Menu.Item>
-        <Menu.Item key="3">nav 3</Menu.Item>
+        <Menu.Item key="1">导航 1</Menu.Item>
+        <Menu.Item key="2">导航 2</Menu.Item>
+        <Menu.Item key="3">导航 3</Menu.Item>
       </Menu>
     </Header>
     <Layout>
@@ -65,4 +67,4 @@ class MainPage extends Component{
     }
 } 
 
-export default MainPage;
+export default Main;
