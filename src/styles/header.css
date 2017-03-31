@@ -1,0 +1,15 @@
+@import '~antd/dist/antd.css';
+.logo{
+    width: 150px;
+    height: 51px;
+    background:url('../static/kouton.png') no-repeat center;
+    border-radius: 6px;
+    margin: 5px 20px 5px -10px;
+    float: left;
+}
+.header{
+    font-size: 16px;
+}
+.logonin,.register{
+    float: right;
+}

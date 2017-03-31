@@ -1,0 +1,42 @@
+{
+  "user": [
+    {
+      "id": 10001,
+      "name": "张三",
+      "age": 30,
+      "gender": "female"
+    },
+    {
+      "name": "李四",
+      "age": "73",
+      "gender": "male",
+      "id": 10002
+    },
+    {
+      "name": "无锡",
+      "age": "50",
+      "gender": "female",
+      "id": 10003
+    },
+    {
+      "name": "两个",
+      "age": "33",
+      "gender": "male",
+      "id": 10004
+    }
+  ],
+  "book": [
+    {
+      "id": 10000,
+      "name": "javascript",
+      "price": 99,
+      "owner_id": 10000
+    },
+    {
+      "id": 10001,
+      "name": "java入门",
+      "price": 179,
+      "owner_id": 10001
+    }
+  ]
+}

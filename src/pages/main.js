@@ -1,6 +1,6 @@
 import React from 'react';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
-import '../styles/main.less';
+import '../styles/main.css';
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
