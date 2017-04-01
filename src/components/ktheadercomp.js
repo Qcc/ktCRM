@@ -9,7 +9,9 @@ class KtHeaderComp extends React.Component{
     state = {
         current: this.props.active,
     }
-    
+    static propTypes ={
+        active:React.PropTypes.string.isRequired
+    }
     render(){
         return(
           <Layout> 
