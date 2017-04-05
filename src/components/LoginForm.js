@@ -1,8 +1,7 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import reqwest from 'reqwest';
-
-import { Form, Icon, Input, Button, Checkbox, Row, Col } from 'antd';
+import { Form, Icon, Input, Button, Checkbox, Row, Col, Modal } from 'antd';
 const FormItem = Form.Item;
 
 
@@ -39,12 +38,17 @@ class LoginForm extends React.Component {
             withCredentials: true,              //跨域时带Cookie
             data: {
                 user: paras.userName,
-                passwd: paras.password
+                passwd: paras.password,
+                validateCode: paras.validateCode
             },
             error: function (err) {
                 console.dir(err);
                 that.leaveLoading();
-                alert("连接服务器失败");
+                Modal.error({
+                    title: '登录失败',
+                    content: '连接服务器故障'
+                });
+                that.refreshValidateCode(); //刷新验证码
             },
             success: function (resp) {
                 that.leaveLoading();
@@ -53,9 +57,13 @@ class LoginForm extends React.Component {
                     window.location.href = that.props.loginSuccessURL;
                 }
                 else {
-                    alert(resp.message);
-                    if(resp.errorCode === 102 || resp.errorCode === 103) {
-                        if(resp.entity > 3) {
+                    that.refreshValidateCode(); //刷新验证码
+                    Modal.error({
+                        title: '登录失败',
+                        content: resp.message
+                    });
+                    if(resp.errorCode >= 102 && resp.errorCode <= 104) {
+                        if(resp.entity > 2) {
                             if(that.state.validateMode === 0) {
                                 that.setState({validateMode:1});
                             }
@@ -73,36 +81,34 @@ class LoginForm extends React.Component {
                 console.log('Received values of form: ', values);
                 this.loginRequest(values);
             }
+            else { this.leaveLoading(); }
         });
     }
 
     refreshValidateCode = (e) => {
-        var a = document.getElementById('validateCode');
-        console.dir(a);
+        var img = document.getElementById('validate-code-img');
+        if(img)
+            img.src = this.props.validateCodeImgURL + "?nocache=" + new Date().getTime();
     }
 
     validateCodeFormItem = () => {
         if(this.state.validateMode === 0)
             return;
         const { getFieldDecorator } = this.props.form;
-        return (<FormItem>
+        return <FormItem>
                           {getFieldDecorator('validateCode', {
-                              rules: [{ message: '请输入验证码!' }],
+                              rules: [{ required: true, message: '请输入验证码!' }],
                           })(
                               <Row gutter={8}>
                                   <Col span={12}>
-                          {getFieldDecorator('captcha', {
-                              rules: [{ required: true, message: '请输入验证码!' }],
-                          })(
-                              <Input prefix={<Icon type="question" style={{ fontSize: 13 }} />} placeholder="验证码" />
-                          )}
+                                      <Input prefix={<Icon type="question" style={{ fontSize: 13 }} />} placeholder="验证码" />
                                   </Col>
                                   <Col span={12}>
-                                      <img src={this.props.validateCodeImgURL} id="validateCode" alt="验证码" title="点击刷新验证码" style={{cursor: "pointer"}} onclick={this.refreshValidateCode} />
+                                      <img src={this.props.validateCodeImgURL} id="validate-code-img" title="点击刷新验证码" alt="验证码" style={{cursor: "pointer"}} onClick={this.refreshValidateCode} />
                                   </Col>
                               </Row>
                           )}
-            </FormItem>);
+            </FormItem>;
     }
 
     enterLoading = () => {
@@ -115,10 +121,7 @@ class LoginForm extends React.Component {
     render() {
         const { getFieldDecorator } = this.props.form;
         return (
-            
             <Form action={this.props.actionURL} onSubmit={this.handleSubmit} className="login-form">
-                <span className='login-welcome'>欢迎回来</span>
-                <span className='login-register'>还没有账户？ <Link to="/register">注册</Link></span>
                 <FormItem>
               {getFieldDecorator('userName', {
                   rules: [{ required: true, message: '请输入用户名!' }],
@@ -144,6 +147,7 @@ class LoginForm extends React.Component {
                     <Button type="primary" htmlType="submit" loading={this.state.loading} onClick={this.enterLoading} className="login-form-button">
                     登录
                     </Button>
+                    <span className='findpwd'>忘记帐号密码？<Link to='/findPwd'>点击找回</Link></span>
                 </FormItem>
             </Form>
         );

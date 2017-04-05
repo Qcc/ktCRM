@@ -1,28 +1,22 @@
 import React from 'react';
 import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import KtHeaderComp from '../components/ktheadercomp';
 import '../styles/main.css';
+
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
 
 class Main extends React.Component{
-
+    componentDidMount() {
+        document.title='订货系统-深圳市沟通科技有限公司';
+    }
       
     render(){
         return(
-        <Layout>
-    <Header className="header">
-      <div className="logo" />
-      <Menu
-        theme="dark"
-        mode="horizontal"
-        defaultSelectedKeys={['2']}
-        style={{ lineHeight: '64px' }}
-      >
-        <Menu.Item key="1">导航 1</Menu.Item>
-        <Menu.Item key="2">导航 2</Menu.Item>
-        <Menu.Item key="3">导航 3</Menu.Item>
-      </Menu>
-    </Header>
+    <Layout>
+      <Header>
+        <KtHeaderComp active='main'/>
+      </Header>
     <Layout>
       <Sider width={200} style={{ background: '#fff' }}>
         <Menu

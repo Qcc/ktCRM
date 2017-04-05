@@ -2,19 +2,19 @@ import React from 'react';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
 
-class Product extends React.Component{
+class Customer extends React.Component{
     componentDidMount() {
-        document.title='CTBS-深圳市沟通科技有限公司';
+        document.title='找回密码-深圳市沟通科技有限公司';
     }
     render(){
         return(
             <div>
-            <KtHeaderComp active="ctbs"/>
-            <h1>这是CTBS详情页</h1>
+            <KtHeaderComp active="customer"/>
+            <h1>这是找回密码</h1>
             <KtFooterComp/>
             </div>
         );
     }
 }
 
-export default Product;
+export default Customer;

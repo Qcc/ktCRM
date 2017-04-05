@@ -1,7 +1,7 @@
 @import '~antd/dist/antd.css';
 .login-form{
     width: 700px;
-    margin-top: 150px;
+    margin-top: 10px;
     position: relative;
     left: 50%;
     margin-left: -350px;
@@ -18,5 +18,17 @@
 .login-register{
     float: right;
     font-size: 14px;
-    margin-bottom: 10px;    
+    line-height: 48px;
+    vertical-align: middle;
+}
+.login-title{
+    width: 700px;
+    margin: 0 auto;
+}
+.login-continner{
+    vertical-align: middle;
+    margin-top: 130px;
+}
+.findpwd{
+    float: right;
 }

@@ -1,0 +1,12 @@
+.about span{
+    margin: 10px 5px;
+}
+.footer{
+    height: 40px;
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    margin: 10px auto 10px ;
+    text-align: center;
+}

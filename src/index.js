@@ -9,7 +9,8 @@ import Service from './pages/service';
 import Customer from './pages/customer';
 import Register from './pages/register';
 import Login from './pages/login';
-//import './index.css';
+import FindPwd from './pages/findPwd';
+import './index.css';
 
 ReactDOM.render((
     <HashRouter>
@@ -22,6 +23,7 @@ ReactDOM.render((
         <Route path="/customer" component={Customer}/>
         <Route path="/login" component={Login}/>
         <Route path="/register" component={Register}/>
+        <Route path="/findPwd" component={FindPwd}/>
       </div>
     </HashRouter>
   ),
