@@ -1,2 +1,46 @@
 @import '~antd/dist/antd.css';
+.home-banner{
+    width: 100%;
+    overflow: hidden;
+}
+ .home-banner img{
+     height: 400px;
+     position: relative;
+     left: 50%;
+     margin-left: -960px;
+ }
  
+ 
+ /*.home-banner1{
+     width: 1920px;
+     height: 400px;
+     background:url('../static/banner01.jpg') no-repeat center;
+ }
+  .home-banner2{
+      width: 1920px;
+     height: 400px;
+     background:url('../static/banner02.jpg') no-repeat center;
+ }
+  .home-banner3{
+      width: 1920px;
+     height: 400px;
+     background:url('../static/banner03.jpg') no-repeat center;
+ }
+  .home-banner4{
+      width: 1920px;
+     height: 400px;
+     background:url('../static/banner04.jpg') no-repeat center;
+ }
+ .home-banner-content{
+     width: 1920px;
+     height: 400px;
+ }*/
+ .home-content{
+     width: 1000px;
+     margin: 5px auto;
+ }
+ .home-content-title{
+     padding: 5px 0;
+     margin: 5px auto;
+     border-bottom: 2px solid #ccc;
+ }

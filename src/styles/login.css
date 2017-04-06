@@ -22,11 +22,13 @@
     vertical-align: middle;
 }
 .login-title{
-    width: 700px;
     margin: 0 auto;
 }
 .login-continner{
-    vertical-align: middle;
+    width: 700px;
+    position: relative;
+    left: 50%;
+    margin-left: -350px;
     margin-top: 130px;
 }
 .findpwd{

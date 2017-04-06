@@ -5,7 +5,7 @@ class KtFooterComp extends React.Component{
         return(
             <div className='footer'>
                 <div className='about'>
-                    <span>关于我们1</span>
+                    <span>关于我们</span>
                     <span>商务合作</span>
                     <span>合作案例</span>
                     <span>商务联系</span>

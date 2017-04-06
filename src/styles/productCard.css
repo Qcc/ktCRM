@@ -1,0 +1,14 @@
+.product-card{
+    width: 220px;
+    display: inline-block;
+    margin: 10px 15px;
+}
+.product-img img {
+  display: block;
+}
+.product-title {
+  padding: 10px 16px;
+}
+.product-title p {
+  color: #999;
+}

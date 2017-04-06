@@ -5,6 +5,8 @@ import KtHeaderComp from '../components/ktheadercomp';
 import LoginForm from '../components/LoginForm';
 import KtFooterComp from '../components/ktfootercomp';
 import '../styles/login.css'; 
+import '../styles/common.css'; 
+
 
     let urlRoot = 'http://localhost:8080/dinghuo-kouton/';
     let loginURL = urlRoot + "public/user/login.api";
@@ -31,7 +33,7 @@ class Login extends React.Component{
                  loginSuccessURL={loginSuccessURL} 
                  validateCodeURL={validateCodeURL} />            
                </div>
-               <KtFooterComp/>
+               <KtFooterComp />
             </div>
         );
     }

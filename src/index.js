@@ -3,8 +3,9 @@ import ReactDOM from 'react-dom';
 import {HashRouter,Route} from 'react-router-dom';
 import HomePage from './pages/home';
 import MainPage from './pages/main';
-import CTBSProduct from './pages/ctbsProduct';
-import CloudProduct from './pages/cloudProduct';
+import CTBSEnterprise from './pages/ctbsEnterprise';
+import CTBSAdv from './pages/ctbsAdv';
+import CloudApp from './pages/cloudApp';
 import Service from './pages/service';
 import Customer from './pages/customer';
 import Register from './pages/register';
@@ -17,8 +18,9 @@ ReactDOM.render((
       <div>
         <Route exact path="/" component={HomePage}/>
         <Route path="/main" component={MainPage}/>
-        <Route path="/ctbsProduct" component={CTBSProduct}/>
-        <Route path="/cloudProduct" component={CloudProduct}/>
+        <Route path="/ctbsEnterprise" component={CTBSEnterprise}/>
+        <Route path="/ctbsAdv" component={CTBSAdv}/>        
+        <Route path="/cloudApp" component={CloudApp}/> 
         <Route path="/service" component={Service}/>
         <Route path="/customer" component={Customer}/>
         <Route path="/login" component={Login}/>
