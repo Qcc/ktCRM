@@ -15,7 +15,7 @@ class Main extends React.Component{
         return(
     <Layout>
       <Header>
-        <KtHeaderComp active='main'/>
+        <KtHeaderComp active='main' theme='drak'/>
       </Header>
     <Layout>
       <Sider width={200} style={{ background: '#fff' }}>

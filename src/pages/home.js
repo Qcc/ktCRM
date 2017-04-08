@@ -20,13 +20,12 @@ class Home extends React.Component{
         return(
            <div>
               <KtHeaderComp active='home'/>
-              <Carousel {...settings}>
-                <div className='home-banner'><img alt='轮播广告' src={require('../static/banner01.jpg')}/></div>
-                <div className='home-banner'><img alt='轮播广告' src={require('../static/banner02.jpg')}/></div>
-                <div className='home-banner'><img alt='轮播广告' src={require('../static/banner03.jpg')}/></div>
-                <div className='home-banner'><img alt='轮播广告' src={require('../static/banner04.jpg')}/></div>
-                {/*<div className='home-banner4'><div className='home-banner-content'></div></div>                */}
-              </Carousel>
+                    <Carousel {...settings}>
+                        <div className='home-banner'><img alt='轮播广告' src={require('../static/banner01.jpg')}/></div>
+                        <div className='home-banner'><img alt='轮播广告' src={require('../static/banner02.jpg')}/></div>
+                        <div className='home-banner'><img alt='轮播广告' src={require('../static/banner03.jpg')}/></div>
+                        <div className='home-banner'><img alt='轮播广告' src={require('../static/banner04.jpg')}/></div>
+                    </Carousel>
               <Content className='home-content'>
                   <div className='home-content-title'>
                     <h2>应用虚拟化</h2>
