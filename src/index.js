@@ -2,7 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {HashRouter,Route} from 'react-router-dom';
 import HomePage from './pages/home';
-import MainPage from './pages/main';
+
+import UserInfo from './pages/user_info';
+import UserMod from './pages/user_mod';
+
+import LicTemp from './pages/lic_temp';
+import LicGenu from './pages/lic_genu';
+
+import InvenQuery from './pages/inven_query';
+import InvenDetails from './pages/inven_details';
+
 import CTBSEnterprise from './pages/ctbsEnterprise';
 import CTBSAdv from './pages/ctbsAdv';
 import CloudApp from './pages/cloudApp';
@@ -13,11 +22,19 @@ import Login from './pages/login';
 import FindPwd from './pages/findPwd';
 import './index.css';
 
-ReactDOM.render((
+ReactDOM.render(
     <HashRouter>
       <div>
         <Route exact path="/" component={HomePage}/>
-        <Route path="/main" component={MainPage}/>
+        <Route path="/user_info" component={UserInfo}/>
+        <Route path="/user_mod" component={UserMod}/>     
+
+        <Route path="/lic_temp" component={LicTemp}/>        
+        <Route path="/lic_genu" component={LicGenu}/>        
+
+        <Route path="/inven_query" component={InvenQuery}/>        
+        <Route path="/inven_details" component={InvenDetails}/>        
+           
         <Route path="/ctbsEnterprise" component={CTBSEnterprise}/>
         <Route path="/ctbsAdv" component={CTBSAdv}/>        
         <Route path="/cloudApp" component={CloudApp}/> 
@@ -27,7 +44,6 @@ ReactDOM.render((
         <Route path="/register" component={Register}/>
         <Route path="/findPwd" component={FindPwd}/>
       </div>
-    </HashRouter>
-  ),
+    </HashRouter>,
   document.getElementById('root')
 );
