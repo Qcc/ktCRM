@@ -2,16 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import {HashRouter,Route} from 'react-router-dom';
 import HomePage from './pages/home';
-
-import UserInfo from './pages/user_info';
-import UserMod from './pages/user_mod';
-
-import LicTemp from './pages/lic_temp';
-import LicGenu from './pages/lic_genu';
-
-import InvenQuery from './pages/inven_query';
-import InvenDetails from './pages/inven_details';
-
+import Main from './pages/main';
 import CTBSEnterprise from './pages/ctbsEnterprise';
 import CTBSAdv from './pages/ctbsAdv';
 import CloudApp from './pages/cloudApp';
@@ -26,15 +17,7 @@ ReactDOM.render(
     <HashRouter>
       <div>
         <Route exact path="/" component={HomePage}/>
-        <Route path="/user_info" component={UserInfo}/>
-        <Route path="/user_mod" component={UserMod}/>     
-
-        <Route path="/lic_temp" component={LicTemp}/>        
-        <Route path="/lic_genu" component={LicGenu}/>        
-
-        <Route path="/inven_query" component={InvenQuery}/>        
-        <Route path="/inven_details" component={InvenDetails}/>        
-           
+        <Route path="/main" component={Main}/>        
         <Route path="/ctbsEnterprise" component={CTBSEnterprise}/>
         <Route path="/ctbsAdv" component={CTBSAdv}/>        
         <Route path="/cloudApp" component={CloudApp}/> 
