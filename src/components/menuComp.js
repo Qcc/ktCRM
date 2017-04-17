@@ -5,6 +5,7 @@ import KtHeaderComp from './ktheadercomp';
 import UserInfo from './content/user_info';
 import UserMod from './content/user_mod';
 
+import LicQuery from './content/lic_query';
 import LicTemp from './content/lic_temp';
 import LicGenu from './content/lic_genu';
 
@@ -18,6 +19,7 @@ const { Header, Content, Sider } = Layout;
 const childComponent = {
       userInfo:UserInfo,
       userMod:UserMod,
+      licQuery:LicQuery,
       licTemp:LicTemp,
       licGenu:LicGenu,
       invenQuery:InvenQuery,
@@ -59,6 +61,7 @@ class MenuComp extends React.Component{
             <Menu.Item key="userMod">修改资料</Menu.Item>
           </SubMenu>
           <SubMenu key="lic" title={<span><Icon type="idcard" />授权管理</span>}>
+            <Menu.Item key="licQuery">授权查询</Menu.Item>            
             <Menu.Item key="licTemp">临时授权</Menu.Item>
             <Menu.Item key="licGenu">正式授权</Menu.Item>
           </SubMenu>

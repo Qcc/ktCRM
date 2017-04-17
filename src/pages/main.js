@@ -1,11 +1,14 @@
 import React from 'react';
 import MenuComp from '../components/menuComp';
-
+import KtFooterComp from '../components/ktfootercomp';
 class Main extends React.Component{
 
     render(){
         return(
-            <MenuComp/>
+            <div>
+                <MenuComp/>
+                <KtFooterComp/>
+            </div>
         );
     }
 }

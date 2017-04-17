@@ -1,0 +1,19 @@
+.user{
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+}
+.avatar{
+    width: 90px;
+    height: 90px;
+    border: 2px solid #ccc;
+    border-radius: 50%;
+    overflow: hidden;
+    position: relative;
+    left: 50%;
+    margin-left: -45px;
+}
+.timeline p{
+    font-size: 14px;
+}
