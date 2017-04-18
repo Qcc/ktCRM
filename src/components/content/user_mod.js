@@ -1,60 +1,29 @@
 import React from 'react';
-import {Button,Icon,Modal,Steps,Input } from 'antd';
+import {Button,Icon } from 'antd';
+import UserModPwdModal from './user_mod_pwd_modal';
+import UserModMailModal from './user_mod_mail_modal';
+import UserModSecurityModal from './user_mod_security_modal';
 import '../../styles/usermod.css';
-
-const Step = Steps.Step;
+const modal = {};
 class UserMod extends React.Component{
-
     state = {
         company:'深圳市沟通科技有限公司', //代理商公司名称
         phone:'1588877878',
         contact:'张三',
         avatar:require('../../static/avatar.jpg'), //用户头像
         level:'金牌代理',
-        modPwdVisible:false,
-        modMailVisible:false,
-        modSecurityVisible:false,
-        modPwdSteps:0,
     }
+    //将modal子组件回调存储Modal对象备用   
+    handleRefPwd=(obj)=>{modal.UserModPwdModal=obj;}
+    handleRefMail=(obj)=>{modal.UserModMailModal=obj;}
+    handleRefSecurity=(obj)=>{modal.UserModSecurityModal=obj;}
+
     //弹出修改密码模态框
-    modPwdClick=(e)=>{
-        console.log(e);
-        this.setState({
-            modPwdVisible:true,
-        });
-    }
+    modPwdClick=(e)=>{modal.UserModPwdModal.modPwdOpen();}
     //弹出修改邮箱模态框
-    modMailClick=(e)=>{
-        console.log(e);        
-        this.setState({
-            modMailVisible:true,
-        });
-    }
+    modMailClick=(e)=>{modal.UserModMailModal.modMailOpen();}
     //弹出修改安全问题模态框
-    securityQuestionClick=(e)=>{
-        console.log(e);        
-        this.setState({
-            modSecurityVisible:true,
-        });
-    }
-    //关闭修改密码模态框
-    modPwdCancel=(e)=>{
-        this.setState({
-            modPwdVisible:false,
-        });
-    }
-    //关闭修改邮箱模态框
-    modMailCancel=(e)=>{
-        this.setState({
-            modMailVisible:false,
-        });
-    }
-    //关闭修改安全问题模态框
-    handleCancel=(e)=>{
-        this.setState({
-            modSecurityVisible:false,
-        });
-    }
+    securityQuestionClick=(e)=>{modal.UserModSecurityModal.modSecurityOpen();}
 
     render(){
         return(
@@ -100,45 +69,10 @@ class UserMod extends React.Component{
                             <Button onClick={this.securityQuestionClick}>修改</Button>
                         </div>                                            
                     </div>
-                    <Modal title="修改密码"  
-                        visible={this.state.modPwdVisible}
-                        onOk={this.handleOk} 
-                        onCancel={this.modPwdCancel}
-                        footer={<Button type="primary">下一步</Button>}>
-                        <Steps  current={this.state.modPwdSteps}>
-                            <Step title="验证密码" />
-                            <Step title="修改密码" />
-                            <Step title="完成" />
-                        </Steps>
-                        <br />
-                        <p style={{fontSize:16}}>需要验证密码才能继续:</p>
-                        <Input prefix={<Icon type="lock" style={{ fontSize: 14 }} />} type="password" placeholder="请输入密码" />
-                    </Modal>
-                    <Modal title="修改邮箱"   
-                        visible={this.state.modMailVisible}
-                        onOk={this.handleOk} 
-                        onCancel={this.modMailCancel}
-                        footer={<Button type="primary">下一步</Button>}>
-                        <Steps current={this.state.modPwdSteps}>
-                            <Step title="验证密码" />
-                            <Step title="填写验证码" />
-                            <Step title="填写新邮箱" />                            
-                            <Step title="新邮箱验证" />
-                        </Steps>
-                    </Modal>
-                    <Modal title="修改密保问题"  
-                        visible={this.state.modSecurityVisible}
-                        onOk={this.handleOk} 
-                        onCancel={this.handleCancel}
-                        footer={<Button type="primary">下一步</Button>}>
-                        <Steps current={this.state.modPwdSteps}>
-                            <Step title="验证密码" />
-                            <Step title="修改密保问题" />
-                            <Step title="修改成功" />
-                        </Steps>
-                        
-                    </Modal>
-                </div>
+                    <UserModPwdModal  ref={this.handleRefPwd}></UserModPwdModal>
+                    <UserModMailModal  ref={this.handleRefMail}></UserModMailModal>
+                    <UserModSecurityModal  ref={this.handleRefSecurity}></UserModSecurityModal>
+                    </div>
         );
     }
 }
