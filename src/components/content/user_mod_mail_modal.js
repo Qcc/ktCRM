@@ -1,5 +1,5 @@
 import React from 'react';
-import {Icon,Steps,Input,Modal,Button } from 'antd';
+import {Steps,Modal,Button } from 'antd';
 
 const Step = Steps.Step;
 class UserModMailModal extends React.Component{

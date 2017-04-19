@@ -30,7 +30,7 @@ class MenuComp extends React.Component{
         document.title='订货系统-深圳市沟通科技有限公司';
     }
     state = {
-      currentComponent:childComponent.userInfo,
+      currentComponent:childComponent.licQuery,
     }
     //点击切换菜单
     handleClick = (e) => {
@@ -51,8 +51,8 @@ class MenuComp extends React.Component{
       <Sider width={200} style={{ background: '#fff' }}>
         <Menu
           mode="inline"
-          defaultSelectedKeys={['userInfo']} //默认选中的菜单Item
-          defaultOpenKeys={['user']}  //默认打开的菜单组
+          defaultSelectedKeys={['licQuery']} //默认选中的菜单Item
+          defaultOpenKeys={['lic']}  //默认打开的菜单组
           onClick={this.handleClick} //菜单点击handle
           style={{ height: '100%' }}
         > 
@@ -67,7 +67,7 @@ class MenuComp extends React.Component{
           </SubMenu>
           <SubMenu key="inven" title={<span><Icon type="home" />库存管理</span>}>
             <Menu.Item key="invenQuery">库存查询</Menu.Item>
-            <Menu.Item key="invenDetails">发货明细</Menu.Item>
+            <Menu.Item key="invenDetails">出货明细</Menu.Item>
           </SubMenu>
         </Menu>
       </Sider>

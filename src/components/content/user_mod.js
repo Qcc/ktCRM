@@ -4,40 +4,38 @@ import UserModPwdModal from './user_mod_pwd_modal';
 import UserModMailModal from './user_mod_mail_modal';
 import UserModSecurityModal from './user_mod_security_modal';
 import '../../styles/usermod.css';
-const modal = {};
+
 class UserMod extends React.Component{
     state = {
+        account:'金牌代理',
         company:'深圳市沟通科技有限公司', //代理商公司名称
         phone:'1588877878',
         contact:'张三',
         avatar:require('../../static/avatar.jpg'), //用户头像
         level:'金牌代理',
     }
-    //将modal子组件回调存储Modal对象备用   
-    handleRefPwd=(obj)=>{modal.UserModPwdModal=obj;}
-    handleRefMail=(obj)=>{modal.UserModMailModal=obj;}
-    handleRefSecurity=(obj)=>{modal.UserModSecurityModal=obj;}
 
-    //弹出修改密码模态框
-    modPwdClick=(e)=>{modal.UserModPwdModal.modPwdOpen();}
+    //弹出修改密码模态框,以下三行调用的是同ref回调传入父组件中的 子组件的引用
+    modPwdClick=(e)=>{this.userModPwdModal.modPwdOpen();}
     //弹出修改邮箱模态框
-    modMailClick=(e)=>{modal.UserModMailModal.modMailOpen();}
+    modMailClick=(e)=>{this.userModMailModal.modMailOpen();}
     //弹出修改安全问题模态框
-    securityQuestionClick=(e)=>{modal.UserModSecurityModal.modSecurityOpen();}
+    securityQuestionClick=(e)=>{this.userModSecurityModal.modSecurityOpen();}
 
     render(){
         return(
                 <div>
                     <div className='usermod-title'>
                         <h2>账户信息</h2> 
-                        <Button className='usermod-edit-button'><Icon type="edit" />编辑</Button>
+                        <Button disabled className='usermod-edit-button'><Icon type="edit" />编辑</Button>
                     </div>
                     <div className='usermod-avatar'>
                         <img src={this.state.avatar} alt='头像'/>
                     </div>
                     <div  className='usermod-info'>
+                        <div><span className='usermod-info-title'>伙伴等级 : </span><span>{this.state.account}</span><br/></div>
                         <div><span className='usermod-info-title'>公司名称 : </span><span>{this.state.company}</span><br/></div>
-                        <div><span className='usermod-info-title'>登录帐号/手机号 : </span><span>{this.state.phone}</span><br/></div>
+                        <div><span className='usermod-info-title'>手机 : </span><span>{this.state.phone}</span><br/></div>
                         <div><span className='usermod-info-title'>联系人 : </span><span>{this.state.contact}</span><br/></div>                                                
                     </div>
                     <div className='usermod-title'>
@@ -58,7 +56,7 @@ class UserMod extends React.Component{
                                 <h3>邮箱安全</h3>
                                 <p>安全邮箱可以用于登录，找回密码，修改其他密保信息，接收授权之用</p>
                             </div>
-                            <Button onClick={this.modMailClick}>修改</Button>
+                            <Button disabled onClick={this.modMailClick}>修改</Button>
                         </div>
                         <div className='usermod-safe-container'>
                             <Icon className='usermod-safe-icon' type="solution" />
@@ -66,13 +64,15 @@ class UserMod extends React.Component{
                                 <h3>密保问题</h3>
                                 <p>密保问题，可用于找回密码，验证身份之用</p>
                             </div>
-                            <Button onClick={this.securityQuestionClick}>修改</Button>
+                            <Button disabled onClick={this.securityQuestionClick}>修改</Button>
                         </div>                                            
                     </div>
-                    <UserModPwdModal  ref={this.handleRefPwd}></UserModPwdModal>
-                    <UserModMailModal  ref={this.handleRefMail}></UserModMailModal>
-                    <UserModSecurityModal  ref={this.handleRefSecurity}></UserModSecurityModal>
+                    <UserModPwdModal  ref={node=>this.userModPwdModal=node}></UserModPwdModal>
+                    <UserModMailModal  ref={node=>this.userModMailModal=node}></UserModMailModal>
+                    <UserModSecurityModal  ref={node=>this.userModSecurityModal=node}></UserModSecurityModal>
                     </div>
+                    // ref 属性为回调，将子组件的引用传回到父组件的一个属性中，这样父组件通过该属性就可以操作子组件了。
+                    
         );
     }
 }
