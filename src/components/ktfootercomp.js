@@ -12,7 +12,7 @@ class KtFooterComp extends React.Component{
                     <span>注册协议</span>
                 </div>
                 <div>
-                    <span>Copyright © kouton.com All Rights Reserved. 2000-2018 粤ICP备06069852号</span>
+                    <span>Copyright © kouton.com All Rights Reserved. 2003-2018 粤ICP备06069852号</span>
                 </div>
             </div>
         );

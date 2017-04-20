@@ -5,16 +5,6 @@ message.config({
   top: 70,
   duration: 2,
 });
-class LicTable extends React.Component{
-        
-        
-    render() {
-        
-        return (
-        <p>1</p>
-        );
-  }
-}
 
 const columns = [{
   title: '项目',
@@ -38,21 +28,26 @@ const data = [{
   checked: 'BY05-7109-8A90-01F0',
 },{
   key: '3',
+  project: '产品',
+  status: 'Ok',
+  checked: '云桌面V2.1',
+},{
+  key: '4',
   project: '授权',
   status: 'Ok',
   checked: '正式版',
 }, {
-  key: '4',
+  key: '5',
   project: '到期时间',
   status: 'Ok',
   checked: '2017年5月19日 15:38:32',
 }, {
-  key: '5',
+  key: '6',
   project: '授权数',
   status: 'Ok',
   checked: 15,
 },{
-  key: '6',
+  key: '7',
   project: '激活',
   status: 'Ok',
   checked: '已激活',  
@@ -77,20 +72,23 @@ class LicQuery extends React.Component{
         }
     //测试cdkey格式是否正常
     test(cdKey){
-        if(cdKey.length != 19) return false;
-        if(cdKey.charAt(4) !='-' && cdKey.charAt(9) !='-' && cdKey.charAt(14) !='-') return false;
-        return true;
+        if(cdKey.length === 0 ) return '请输入授权码！'
+        if(cdKey.length !== 19) return '授权码不正确，请检查后重新查询。';
+        if(cdKey.charAt(4) !=='-' || cdKey.charAt(9) !=='-' || cdKey.charAt(14) !=='-') return '授权码格式不正确，请检查后重新查询。';
+        return false;
     }
     query(e){
-        if(!this.test(this.state.cdKey)){
-            message.error('授权码不正确，请检查后重新查询。');
+        let checked = this.test(this.state.cdKey);
+        if(checked){
+            message.error(checked);
             return;
         }
         console.log('授权码正确');
+        //
     }
     render(){
         const { cdKey } = this.state;
-        const suffix = cdKey ? <Icon type="close-circle" onClick={this.emitEmpty} /> : null;
+        const suffix = cdKey ? <Icon type="close-circle"  onClick={this.emitEmpty} /> : null;
         const queryButton = <Button onClick={()=>this.query()} type="primary">查询(Enter)</Button>
         return(
             <div>
@@ -100,6 +98,7 @@ class LicQuery extends React.Component{
                 <div className='query-input'>
                     <Input
                     addonAfter={queryButton}
+                    onPressEnter={()=>this.query()}
                     size='large' 
                     placeholder="XXXX-XXXX-XXXX-XXXX"
                     prefix={<Icon type="key" />}
