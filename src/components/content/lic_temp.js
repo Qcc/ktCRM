@@ -1,52 +1,123 @@
 import React from 'react';
-import {Button,Table, Input, Icon } from 'antd';
+import reqwest from 'reqwest';
+import {Button,Table, Input, Icon,message,Popconfirm,Modal } from 'antd';
 import '../../styles/lictemp.css';
+import {licTemp} from '../../utils/connect';
 
-const data = [{
-  key: '1',
-  cdkey: 'KT05-87DD-3D04-B39F',
-  customer: '深圳市沟通科技有限公司',
-  product:'云桌面',
-  trial: '2017年4月20日 14:43:25',
-  license:10,
-  active:'已激活',
-}, {
-  key: '2',
-  cdkey: 'KT05-87FD-3AS4-B39F',
-  customer: '深圳市沟通科技有限公司',
-  product:'CTBS高级版',
-  trial: '2017年4月20日 14:49:45',
-  license:3,
-  active:'已激活',
-}, {
-  key: '3',
-  cdkey: 'KT05-87AD-3DS4-B39F',
-  customer: '深圳市沟通科技有限公司',
-  product:'云桌面',
-  trial: '2017年4月20日 14:49:50',
-  license:14,
-  active:'已激活',
-}, {
-  key: '4',
-  cdkey: 'KT15-87DD-3D04-B39F',
-  customer: '深圳市沟通科技有限公司',
-  product:'CTBS企业版',
-  trial: '2017年4月20日 14:49:55',
-  license:4,
-  active:'已激活',
-}];
-//===============================================================
+
+class ModCdkModal extends React.Component {
+  state = {
+    loading: false,
+    visible: false,
+  }
+  showModal = () => {
+    this.setState({
+      visible: true,
+    });
+  }
+  handleOk = () => {
+    this.setState({ loading: true });
+    setTimeout(() => {
+      this.setState({ loading: false, visible: false });
+    }, 3000);
+  }
+  handleCancel = () => {
+    this.setState({ visible: false });
+  }
+  render() {
+    return (
+      <div>
+        <Button type="primary" onClick={this.showModal}>
+          Open modal dialog
+        </Button>
+        <Modal
+          visible={this.state.visible}
+          title="Title"
+          onOk={this.handleOk}
+          onCancel={this.handleCancel}
+          footer={[
+            <Button key="back" size="large" onClick={this.handleCancel}>Return</Button>,
+            <Button key="submit" type="primary" size="large" loading={this.state.loading} onClick={this.handleOk}>
+              Submit
+            </Button>,
+          ]}
+        >
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+          <p>Some contents...</p>
+        </Modal>
+      </div>
+    );
+  }
+}
+
 class FilterTable extends React.Component {
   state = {
     filterCdkVisible:false, //cdk筛选input 是否可见
     filterCustomerVisible: false,  //客户名称筛选input是否可见
-    data, //表格数据
     searchCdkText: '', //筛选CDK input value
     searchCustomerText: '',  //筛选客户名称 input value  
     cdkFiltered: false, //cdk筛选icon 颜色
     customerFiltered: false, //客户名称筛选icon 颜色
+    data: [], //表数据
+    pagination: {}, //分页器
+    loading: false, //加载状态
   };
 
+    //表格变化后重新加载数据
+  handleTableChange = (pagination, filters, sorter) => {
+    const pager = { ...this.state.pagination };
+    pager.current = pagination.current;
+    this.setState({
+      pagination: pager,
+    });
+    this.fetch({
+      results: pagination.pageSize,
+      page: pagination.current,
+      sortField: sorter.field,
+      sortOrder: sorter.order,
+      ...filters,
+    });
+  }
+  fetch = (method='GET',params = {}) => {
+    console.log('licTemp',licTemp,'method',method,'params:', params);
+    this.setState({ loading: true });
+    reqwest({
+      url: licTemp,
+      method: method,
+      data: {
+        //results: 10,
+        ...params,
+      },
+      type: 'json',
+    }).then((data) => {
+      //发生网络错误时，清空不可靠的数据
+      if(data.errorCode){
+        console.log("errorCode:",data.errorCode,"message:",data.message );
+        message.error('网络发生错误，请刷新(F5)重试！');
+        data.entity=[];
+        data.allRecord=[];
+      }
+      const pagination = { ...this.state.pagination };
+      // Read total count from server
+      pagination.total = data.allRecord;
+      //pagination.total = 200;
+      this.setState({
+        loading: false,
+        data: data.entity,
+        pagination,
+      });
+      console.log(data.entity);
+    });
+  }
+  //表格组件加载时加载数据
+  componentDidMount() {
+    this.fetch();
+  }
+
+  //表头筛选部分
   //清空授权码输入框
     emitEmpty = (e) => {
             e.target.focus();
@@ -58,13 +129,16 @@ class FilterTable extends React.Component {
   }
   //绑定搜索cdk button
   onCdkSearch = (e) => {
-      console.log(e);
     const { searchCdkText } = this.state;
     const reg = new RegExp(searchCdkText, 'gi');
+    //筛选后重新加载数据
+    let params = `cdkey=${searchCdkText}`;
+    this.fetch(params);
+
     this.setState({
       filterCdkVisible: false,
       cdkFiltered: !!searchCdkText,
-      data: data.map((record) => {
+      data: this.state.data.map((record) => {
         const match = record.cdkey.match(reg);
         if (!match) {
           return null;
@@ -89,13 +163,15 @@ class FilterTable extends React.Component {
   //绑定搜索Customer button
   onCustomerSearch = (e) => {
     const { searchCustomerText } = this.state;
-    console.log("onCustomerSearch(1)"+searchCustomerText);
     const reg = new RegExp(searchCustomerText, 'gi');
-    console.log("onCustomerSearch(2)"+this.state.customerFiltered);    
+    //筛选后重新加载数据
+    let params = `cdkey=${searchCustomerText}`;
+    this.fetch(params);
+
     this.setState({
       filterCustomerVisible: false,
       customerFiltered: !!searchCustomerText,
-      data: data.map((record) => {
+      data: this.state.data.map((record) => {
         const match = record.customer.match(reg);
         if (!match) {
           return null;
@@ -112,8 +188,11 @@ class FilterTable extends React.Component {
         };
       }).filter(record => !!record),
     });
-    console.log("onCustomerSearch(3)"+this.state.customerFiltered);            
   }
+  //显示 模态框 修改授权，加站，延期
+
+
+
   render() {
     //筛选input后缀，清除数据
     const columns = [{
@@ -136,6 +215,14 @@ class FilterTable extends React.Component {
       filterIcon: <Icon type="filter" style={{ color: this.state.cdkFiltered ? '#108ee9' : '#aaa' }} />,
       filterDropdownVisible: this.state.filterCdkVisible,
       onFilterDropdownVisibleChange: visible => this.setState({ filterCdkVisible: visible }, () => this.searchCdkInput.focus()),
+      render: (text, record, index) => {              
+        return(
+              //弹出模态框，修改记录，加站 延期
+               
+                <a href="#">{text}</a>
+               
+        );
+      },
     }, {
       title: '客户名称',
       dataIndex: 'customer',
@@ -185,14 +272,25 @@ class FilterTable extends React.Component {
       key: 'active',
       filters: [{ //表头的筛选菜单
         text: '已激活',
-        value: '已激活',
+        value: true,
       }, {
         text: '未激活',
-        value: '未激活',
+        value: false,
       }],
       onFilter: (value, record) => record.active.indexOf(value) === 0,
     }];
-    return <Table columns={columns} dataSource={this.state.data} size="small" />;
+
+    
+    return <Table 
+              columns={columns} 
+              dataSource={this.state.data} 
+              size="small"
+              rowKey={record => record.registered}  //表格行 key 的取值，可以是字符串或一个函数
+              pagination={this.state.pagination}   //分页器，配置项参考 pagination，设为 false 时不展示和进行分页
+              loading={this.state.loading}   //页面是否加载中
+              onChange={this.handleTableChange} />; //分页、排序、筛选变化时触发
+              //修改cdk模态框
+              <ModCdkModal ref={node=>this.modCdkModal = node}></ModCdkModal>
   }
 }
 

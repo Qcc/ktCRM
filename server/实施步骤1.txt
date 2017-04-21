@@ -1,0 +1,119 @@
+﻿实施步骤：
+    1.在t_corporation中添加id为1的“深圳市沟通科技有限公司”
+    
+    2.在t_department中添加三个部门：“管理部”、“财务部”、“销售部”，指定f_fk_corp_id为1，即是沟通的部门
+        
+    3.添加角色、权限
+        INSERT INTO  t_role(f_role_id, f_role_name) VALUES(1, 'kouton-admin');
+        INSERT INTO  t_role(f_role_id, f_role_name) VALUES(2, 'kouton-finance');
+        INSERT INTO  t_role(f_role_id, f_role_name) VALUES(3, 'kouton-sales');
+        INSERT INTO  t_role(f_role_id, f_role_name) VALUES(4, 'partner-admin');
+        
+        INSERT INTO t_privilege(f_privilege_id,f_privilege_resource) VALUES(1, '/dinghuo/protected/employee/create.api');
+        ......
+        
+        INSERT INTO t_user_role(f_fk_user_id, f_fk_role_id) VALUES (1, 1);
+        ......
+        
+    4.添加管理员
+        INSERT INTO `dinghuo`.`t_employee` (`f_employee_id`, `f_employee_name`, `f_employee_phone`, `f_fk_dp_id`) VALUES ('1', 'jerry', 'jerry', '1');
+        INSERT INTO `dinghuo`.`t_user` (`f_user_id`, `f_user_name`, `f_user_password`, `f_fk_employee_id`) VALUES ('1', 'jerry', '30035607ee5bb378c71ab434a6d05410', '1');
+        INSERT INTO `dinghuo`.`t_user_role` (`f_fk_user_id`, `f_fk_role_id`) VALUES ('1', '1');
+
+    5.添加产品
+        INSERT INTO `dinghuo`.`t_product` (`f_product_id`, `f_product_name`, `f_product_version`, `f_product_price`) VALUES ('1', 'CTBS高级版', '6.0', '500');
+        INSERT INTO `dinghuo`.`t_product` (`f_product_id`, `f_product_name`, `f_product_version`, `f_product_price`) VALUES ('2', 'CTBS企业版', '6.0', '500');
+        INSERT INTO `dinghuo`.`t_product` (`f_product_id`, `f_product_name`, `f_product_version`, `f_product_price`) VALUES ('3', '云桌面', '4.0', '100');
+        
+员工管理
+    1.管理员登录
+        CURL命令行发http请求：
+        d:\tool\curl\curl -d "name=jerry&passwd=jerry" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/public/user/login.api
+        注意，要看到返回"errorCode":0，才表示成功。所有请求都是这样。
+        
+    2.添加员工
+        财务:        
+        d:\tool\curl\curl -d "name=lily&phone=136&dp.id=2&user=lily&password=lily&roles[0].id=2" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/employee/create.api
+        销售:
+        d:\tool\curl\curl -d "name=zhangcj&phone=136&dp.id=3&user=zhangcj&password=zhangcj&roles[0].id=3" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/employee/create.api
+        d:\tool\curl\curl -d "name=chenz&phone=136&dp.id=3&user=chenz&password=chenz&roles[0].id=3" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/employee/create.api
+    
+伙伴管理
+    添加伙伴
+        d:\tool\curl\curl -d "name=partnerA&address=addressA&phone=136111" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/create.api
+
+    修改伙伴
+        d:\tool\curl\curl -d "id=2&name=partnerA&address=addressA&phone=136211" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/update.api
+
+    查询伙伴
+        d:\tool\curl\curl -d "id=2" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/read.api
+    
+    删除伙伴
+        d:\tool\curl\curl -d "id=3" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/delete.api
+    
+    查询伙伴总数
+        d:\tool\curl\curl -d "" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/getCorpCount.api
+    
+    分页批量查询伙伴
+        d:\tool\curl\curl -d "pageNO=1&size=2" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/corp/getCorpPager.api
+    
+完整订货流程（销售代下单）：
+    1.销售登录
+        d:\tool\curl\curl -d "name=zhangcj&passwd=zhangcj" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/public/user/login.api
+    
+    2.创建伙伴partnerA（如果伙伴存在了则跳过此步）
+        d:\tool\curl\curl -d "companyName=partnerA&partnerName=partnerA&partnerPhone=13611111111" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/partner/create.api
+        返回结果类似像这样：{"status":200,"errorCode":0,"message":"Success","moreInfo":"","entity":{"corpId":17,"dpId":18,"employId":6,"insertRet":1}}
+    
+    3.为partnerA申请产品价格
+        d:\tool\curl\curl -d "partnerId=17&productId=1&price=400" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/price/applyForPartner.api
+        其中，partnerId是上步返回的entity.corpId
+        返回结果类似像这样：
+        {"status":200,"errorCode":0,"message":"Success","moreInfo":"","entity":{"id":3,"partner":{"id":17,"name":null,"address":null,"phone":null},"product":{"id":1,"name":null,"version":null,"price":null},"applyUser":null,"applyDatetime":"2017-04-18 14:26:52","approveUser":null,"approveDatetime":null,"price":400.0,"state":1}}
+        其中entity.id是这样申请的价格id，财务审核要用。
+        
+    4.（财务操作）财务收到价格请求，审核
+        d:\tool\curl\curl -d "priceId=3&pass=1" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/price/approveApply.api
+        其中，priceId是上步返回的entity.id
+        
+    5.创建订单
+        d:\tool\curl\curl -d "partnerId=17&productId=1&points=10" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/order/create.api
+        返回结果类似像这样：
+        {"status":200,"errorCode":0,"message":"Success","moreInfo":"","entity":3}
+        其中entity表示订单id.
+        
+    6.（财务操作）财务收到订单，审核
+        d:\tool\curl\curl -d "orderId=3&pass=1" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/order/approval.api
+        
+    7.（自动步骤）审核通过后，修改订单状态，短信提示提示伙伴转帐
+    
+    8.（伙伴操作）伙伴转帐
+    
+    9.（财务操作）财务收到转帐，录入转账记录
+        d:\tool\curl\curl -d "order.id=3&number=123456789&money=4000" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/transfer/add.api
+        
+    10.（财务操作）发货，并修改订单状态为完结
+        d:\tool\curl\curl -d "orderId=3" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/stock/increase.api
+    
+伙伴发授权
+    1.伙伴登录
+        d:\tool\curl\curl -d "name=13611111111&passwd=13611111111" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/public/user/login.api
+        
+    2.生成License
+        试用: d:\tool\curl\curl -d "productId=1&endUserCompany=endUserCompany&endUserName=endUserName&endUserPhone=endUserPhone&endUserEmail=endUserEmail" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/license/generateTrail.api
+        返回结果类似像这样：
+        {"status":200,"errorCode":0,"message":"Success","moreInfo":"","entity":{"id":3,"type":2,"key":"0115-8F85-2F92-E28E","isTrail":1,"userNumber":3,"expirationDate":"2017-05-05","user":null,"product":{"id":1,"name":null,"version":null,"price":null},"actionDatetime":"2017-04-20 14:19:00","resultCode":null,"resultMsg":null,"endUserCompany":"endUserCompany","endUserName":"endUserName","endUserPhone":"endUserPhone","endUserEmail":"endUserEmail"}}
+
+        正式: d:\tool\curl\curl -d "productId=1&userNumber=1&endUserCompany=endUserCompany&endUserName=endUserName&endUserPhone=endUserPhone&endUserEmail=endUserEmail" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/license/generateFormal.api
+        
+    3.延期
+        d:\tool\curl\curl -d "licKey=0115-8F85-2F92-E28E&endUserCompany=endUserCompany&endUserName=endUserName&endUserPhone=endUserPhone&endUserEmail=endUserEmail" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/license/delay.api
+        
+        返回结果类似像这样：
+        {"status":200,"errorCode":0,"message":"Success","moreInfo":"","entity":{"id":9,"type":4,"key":"0115-8F85-2F92-E28E","isTrail":null,"userNumber":null,"expirationDate":null,"user":null,"product":null,"actionDatetime":"2017-04-20 14:39:47","resultCode":null,"resultMsg":null,"endUserCompany":"endUserCompany","endUserName":"endUserName","endUserPhone":"endUserPhone","endUserEmail":"endUserEmail"}}
+        
+    4.加点
+        d:\tool\curl\curl -d "licKey=0115-8F85-2F92-E28E&addUserNumber=1&endUserCompany=endUserCompany&endUserName=endUserName&endUserPhone=endUserPhone&endUserEmail=endUserEmail" -c F:\Tmp\cookies\cookies -b F:\Tmp\cookies\cookies http://localhost:8080/dinghuo/protected/license/addUserNumber.api
+
+    
+
