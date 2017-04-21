@@ -2,7 +2,6 @@ import React from 'react';
 import {Button,Table, Input, Icon } from 'antd';
 import '../../styles/lictemp.css';
 
-
 const data = [{
   key: '1',
   cdkey: 'KT05-87DD-3D04-B39F',
@@ -134,7 +133,7 @@ class FilterTable extends React.Component {
           <Button type="primary" onClick={this.onCdkSearch}>搜索</Button>
         </div>
       ),
-      filterIcon: <Icon type="smile-o" style={{ color: this.state.cdkFiltered ? '#108ee9' : '#aaa' }} />,
+      filterIcon: <Icon type="filter" style={{ color: this.state.cdkFiltered ? '#108ee9' : '#aaa' }} />,
       filterDropdownVisible: this.state.filterCdkVisible,
       onFilterDropdownVisibleChange: visible => this.setState({ filterCdkVisible: visible }, () => this.searchCdkInput.focus()),
     }, {
@@ -154,7 +153,7 @@ class FilterTable extends React.Component {
           <Button type="primary" onClick={this.onCustomerSearch}>搜索</Button>
         </div>
       ), // color: this.state.customerFiltered ? '#108ee9' : '#aaa' 
-      filterIcon: <Icon type="smile-o" style={{ color: '#108ee9'}} />,
+      filterIcon: <Icon type="filter" style={{ color: this.state.customerFiltered ? '#108ee9' : '#aaa' }} />,
       filterDropdownVisible: this.state.filterCustomerVisible,
       onFilterDropdownVisibleChange: visible => this.setState({ filterCustomerVisible: visible }, () => this.searchCustomerInput.focus()),
     }, {
