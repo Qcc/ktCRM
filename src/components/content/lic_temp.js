@@ -1,58 +1,280 @@
 import React from 'react';
 import reqwest from 'reqwest';
-import {Button,Table, Input, Icon,message,Popconfirm,Modal } from 'antd';
+import {Button,Table, Input,InputNumber ,DatePicker, 
+        Icon,message,Modal,Form,Radio,Tooltip,Select} from 'antd';
 import '../../styles/lictemp.css';
 import {licTemp} from '../../utils/connect';
+const FormItem = Form.Item;
+//修改授权码模态框
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 5 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
+
+//复制申请的临时授权码，小按钮
+class CopyIcon extends React.Component{
+    state={text:'复制到剪贴板'}
+
+    handleCopy(e){this.setState({text:'已复制'})}
+    onMouseOut(){this.setState({text:'复制到剪贴板'})} 
+    render(){
+      return(
+         <Tooltip placement="rightTop" title={this.state.text}>
+           <span>{this.props.cdk} </span>
+          <Button type='dashed' shape="circle" icon="copy" 
+              onClick={(e)=>this.handleCopy(e)}
+              onMouseLeave={()=>this.onMouseOut()} />
+        </Tooltip>
+      );
+    }
+}
 
 
-class ModCdkModal extends React.Component {
-  state = {
-    loading: false,
-    visible: false,
-  }
+//申请临时授权界面
+class AskTemlLicModal extends React.Component{
+
+  state={
+    askTempLoading: false, //修改申请授权模态框加载状态
+    askTempVisible: false, //修改申请模态框是否可见
+    confirmDirty: false,
+  };
+
+
+  //显示申请临时授权模态框界面
   showModal = () => {
     this.setState({
-      visible: true,
+      askTempVisible: true,
     });
   }
+  //确认申请临时授权
   handleOk = () => {
-    this.setState({ loading: true });
+    this.setState({ askTempLoading: true });
     setTimeout(() => {
-      this.setState({ loading: false, visible: false });
+      this.setState({ askTempLoading: false, askTempVisible: false });
+      let cdk='XXXX-XXXX-XXXX-XXXX';
+      Modal.success({title: '申请成功！授权码：',content:<CopyIcon cdk={cdk}/>});
     }, 3000);
   }
+  //取消申请临时授权
   handleCancel = () => {
-    this.setState({ visible: false });
+    this.setState({ askTempVisible: false });
   }
+ 
   render() {
     return (
-      <div>
-        <Button type="primary" onClick={this.showModal}>
-          Open modal dialog
-        </Button>
-        <Modal
-          visible={this.state.visible}
-          title="Title"
-          onOk={this.handleOk}
-          onCancel={this.handleCancel}
-          footer={[
-            <Button key="back" size="large" onClick={this.handleCancel}>Return</Button>,
-            <Button key="submit" type="primary" size="large" loading={this.state.loading} onClick={this.handleOk}>
-              Submit
-            </Button>,
-          ]}
-        >
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
-          <p>Some contents...</p>
+       <Modal
+        visible={this.state.askTempVisible}
+              title="申请临时授权"
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+              footer={[
+                <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+                <Button key="submit" type="primary" size="large" loading={this.state.askTempLoading} onClick={this.handleOk}>
+                  申请
+                </Button>,
+              ]}>
+               <Form>
+                   <FormItem
+                     {...formItemLayout}
+                     label="产品"
+                     required
+                     validateStatus="success"
+                   >
+                      <Select
+                        defaultValue="cloudapp"
+                        style={{ width: '50%' }}
+                        onChange={this.handleCurrencyChange}
+                      >
+                       <Option value="cloudapp">沟通云桌面</Option>
+                       <Option value="ctbsdev">CTBS高级版</Option>
+                       <Option value="ctbsenterprise">CTBS企业版</Option>                       
+                     </Select>
+                   </FormItem>
+                 
+                   <FormItem
+                     {...formItemLayout}
+                     required
+                     label="站点数"
+                     hasFeedback
+                     validateStatus="success"
+                   >
+                     <InputNumber defaultValue={3} min={1} max={100}  id="validating" />
+                   </FormItem>
+                 
+                   <FormItem
+                     {...formItemLayout}
+                     label="试用时间(天)"
+                     required
+                     hasFeedback
+                     validateStatus="success"
+                   >
+                     <InputNumber defaultValue={15} min={1} max={15}  id="validating" />
+                   </FormItem>
+                 
+                   <FormItem
+                     {...formItemLayout}
+                     label="授权接收邮箱"
+                     hasFeedback
+                   >
+                     <Input placeholder="客户邮箱" id="warning" />
+                   </FormItem>
+                   
+                   <FormItem
+                     {...formItemLayout}
+                     label="公司名称"
+                   >
+                     <Input placeholder="客户公司名称" id="error" />
+                   </FormItem>
+
+                   <FormItem
+                     {...formItemLayout}
+                     label="联系人"
+                     hasFeedback
+                   >
+                     <Input placeholder="客户联系人" id="error" />
+                   </FormItem>
+                   
+                   <FormItem
+                     {...formItemLayout}
+                     label="手机"
+                     hasFeedback
+                   >
+                     <Input placeholder="客户手机" id="error" />
+                   </FormItem>
+
+                    <FormItem
+                     {...formItemLayout}
+                     label="地址"
+                     hasFeedback
+                   >
+                     <Input placeholder="客户地址" id="error" />
+                   </FormItem>
+             </Form>
+             <p>提示:请务必正确填写完整，当前填写信息将作为以后找回授权码、解除绑定等重要操作的依据。</p>
         </Modal>
-      </div>
     );
   }
 }
 
+
+
+class ModCdkModal extends React.Component{
+
+  state={
+    modCdkloading: false, //修改授权模态框加载状态
+    modCdkvisible: false, //修改授权模态框是否可见
+    cdk:{}, //每行CDK数据
+  }
+
+  //显示修改cdkey模态框界面
+  showModal = (cdk) => {
+    this.setState({
+      modCdkvisible: true,
+      cdk:cdk,
+    });
+    console.log(this.state.cdk.active);
+  }
+  //修改完成后，当点击保存按钮时，更新cdkey
+  handleOk = () => {
+    this.setState({ modCdkloading: true });
+    setTimeout(() => {
+      this.setState({ modCdkloading: false, modCdkvisible: false });
+    }, 3000);
+  }
+  //取消修改
+  handleCancel = () => {
+    this.setState({ modCdkvisible: false });
+  }
+
+  render(){
+    return(
+      <Modal
+              visible={this.state.modCdkvisible}
+              title="修改CDKEY"
+              onOk={this.handleOk}
+              onCancel={this.handleCancel}
+              footer={[
+                <Button key="back" size="large" onClick={this.handleCancel}>取消</Button>,
+                <Button key="submit" type="primary" size="large" loading={this.state.modCdkloading} onClick={this.handleOk}>
+                  保存
+                </Button>,
+              ]}>
+               
+              <Form>
+                 <FormItem
+                   {...formItemLayout}
+                   label="用户"
+                   hasFeedback
+                   validateStatus="success"
+                   required
+                 >
+                   <Input id="user" disabled defaultValue={this.state.cdk.customer} />
+                 </FormItem>
+            
+                 <FormItem
+                    {...formItemLayout}
+                    label="产品"
+                    hasFeedback
+                    validateStatus="success"
+                    required
+                  >
+                    <Input id="product" disabled defaultValue={this.state.cdk.product} />
+                  </FormItem>
+                  
+                  <FormItem
+                   {...formItemLayout}
+                   label="授权码"
+                   hasFeedback
+                   validateStatus="success"
+                   required
+                 >
+                   <Input id="cdk" disabled defaultValue={this.state.cdk.cdkey}/>
+                 </FormItem>
+
+                  <FormItem
+                    {...formItemLayout}
+                    label="站点数"
+                    hasFeedback
+                    validateStatus="warning"
+                    required
+                  >
+                    <InputNumber min={1} max={100} id="license" defaultValue={this.state.cdk.license} />
+                  </FormItem>
+
+                  <FormItem
+                    {...formItemLayout}
+                    label="过期时间"
+                    hasFeedback
+                    validateStatus="warning"
+                    required
+                  >
+                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                  </FormItem>
+                  <FormItem
+                   {...formItemLayout}
+                   label="激活状态"
+                   required
+                 >
+                     <Radio.Group defaultValue={this.state.cdk.active}>
+                      <Radio value="已激活">已激活</Radio>
+                      <Radio value="未激活">未激活</Radio>
+                    </Radio.Group>
+                 </FormItem>
+               </Form>
+               <p>提示：临时授权站点数最多授权100个站点最少1个，每个授权只能延期2次，每次最多7天！</p>
+            </Modal>
+    );
+  }
+}
+
+
+//数据表
 class FilterTable extends React.Component {
   state = {
     filterCdkVisible:false, //cdk筛选input 是否可见
@@ -63,7 +285,8 @@ class FilterTable extends React.Component {
     customerFiltered: false, //客户名称筛选icon 颜色
     data: [], //表数据
     pagination: {}, //分页器
-    loading: false, //加载状态
+    loading: false, //表格加载状态
+    
   };
 
     //表格变化后重新加载数据
@@ -82,7 +305,7 @@ class FilterTable extends React.Component {
     });
   }
   fetch = (method='GET',params = {}) => {
-    console.log('licTemp',licTemp,'method',method,'params:', params);
+    console.log("调用了fecth =",'licTemp',licTemp,'method',method,'params:', params);
     this.setState({ loading: true });
     reqwest({
       url: licTemp,
@@ -109,7 +332,6 @@ class FilterTable extends React.Component {
         data: data.entity,
         pagination,
       });
-      console.log(data.entity);
     });
   }
   //表格组件加载时加载数据
@@ -189,9 +411,12 @@ class FilterTable extends React.Component {
       }).filter(record => !!record),
     });
   }
-  //显示 模态框 修改授权，加站，延期
-
-
+  //单击行 显示 模态框 修改授权，加站，延期
+  onRowClick(record){
+      console.log('111',record);  
+      this.refsModCdkModal.showModal(record);
+  }
+  
 
   render() {
     //筛选input后缀，清除数据
@@ -215,14 +440,6 @@ class FilterTable extends React.Component {
       filterIcon: <Icon type="filter" style={{ color: this.state.cdkFiltered ? '#108ee9' : '#aaa' }} />,
       filterDropdownVisible: this.state.filterCdkVisible,
       onFilterDropdownVisibleChange: visible => this.setState({ filterCdkVisible: visible }, () => this.searchCdkInput.focus()),
-      render: (text, record, index) => {              
-        return(
-              //弹出模态框，修改记录，加站 延期
-               
-                <a href="#">{text}</a>
-               
-        );
-      },
     }, {
       title: '客户名称',
       dataIndex: 'customer',
@@ -281,29 +498,41 @@ class FilterTable extends React.Component {
     }];
 
     
-    return <Table 
+    return (
+
+        <div>
+          <Table 
               columns={columns} 
+              onRowClick={(recode)=>this.onRowClick(recode)} // 单机行 修改cdk模态框
               dataSource={this.state.data} 
               size="small"
               rowKey={record => record.registered}  //表格行 key 的取值，可以是字符串或一个函数
               pagination={this.state.pagination}   //分页器，配置项参考 pagination，设为 false 时不展示和进行分页
               loading={this.state.loading}   //页面是否加载中
-              onChange={this.handleTableChange} />; //分页、排序、筛选变化时触发
-              //修改cdk模态框
-              <ModCdkModal ref={node=>this.modCdkModal = node}></ModCdkModal>
+              onChange={this.handleTableChange} /> 
+            <ModCdkModal ref={(node)=>this.refsModCdkModal=node}/>   
+        </div>
+    );
   }
 }
 
+
+ 
 class LicTemp extends React.Component{
+    //申请临时授权
+    handleAskTempLic(){
+      this.refsAskTemlLicModal.showModal();
+    }
 
     render(){
         return(
             <div>
                 <div className='lictemp-title'>
                     <h2>临时授权</h2> 
-                    <Button className='lictemp-apply-button' type="primary">申请临时授权</Button>
+                    <Button className='lictemp-apply-button' onClick={()=>{this.handleAskTempLic()}} type="primary">申请临时授权</Button>
                 </div>
                 <FilterTable />
+                <AskTemlLicModal ref={(node)=>this.refsAskTemlLicModal=node}/>
             </div>
         );
     }
