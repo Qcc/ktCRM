@@ -1,3 +1,25 @@
+import reqwest from 'reqwest';
+
+export function fetch(url,callback,method='GET',params = {}){
+    console.log("调用了fecth =",'url',url,'method',method,'params:', params);
+    reqwest({
+      url: url,
+      method: method,
+      data: {
+        //results: 10,
+        ...params,
+      },
+      type: 'json',
+    })
+    .then((data) => {
+        console.log("成功获取到数据 ",JSON.stringify(data,null,4));
+        callback(data);
+        })
+    .fail((err,msg)=>{
+        console.log("err ",err,"msg ",msg);
+        callback({});
+    });
+  };
 //获取临时授权完整列表 GET
 export const licTemp = 'http://192.168.200.100:3000/licTemp';
 /*
@@ -16,8 +38,24 @@ export const licTemp = 'http://192.168.200.100:3000/licTemp';
       "trial": "2002-11-08 21:06:44",
       "license": 109,
       "active": true
-    }
+    },
   }
 */
-
-export const Api1 = 'http://localhost:8081';
+//查询产品库存
+export const Inven = 'http://192.168.200.100:3000/inven';
+/*
+{
+  "status": 200,
+  "errorCode": 0,
+  "message": "Success",
+  "moreInfo": "",
+  "entity": [
+    {
+      "cloudAppCount":0
+    },{
+        "ctbsAdvCount":0,
+    },{
+        "ctbsEnterpriseCount":0,
+    }]
+}
+*/

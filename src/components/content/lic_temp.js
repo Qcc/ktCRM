@@ -19,17 +19,19 @@ const formItemLayout = {
 
 //复制申请的临时授权码，小按钮
 class CopyIcon extends React.Component{
-    state={text:'复制到剪贴板'}
+    state={text:'复制CDK'}
 
-    handleCopy(e){this.setState({text:'已复制'})}
-    onMouseOut(){this.setState({text:'复制到剪贴板'})} 
+    handleCopy(e){this.setState({text:'复制成功'})}
+    onMouseOut(){this.setState({text:'复制CDK'})} 
     render(){
       return(
-         <Tooltip placement="rightTop" title={this.state.text}>
+         <Tooltip placement="rightTop" 
+            title={this.state.text}
+            onClick={(e)=>this.handleCopy(e)}
+            onMouseLeave={()=>this.onMouseOut()} 
+          >
            <span>{this.props.cdk} </span>
-          <Button type='dashed' shape="circle" icon="copy" 
-              onClick={(e)=>this.handleCopy(e)}
-              onMouseLeave={()=>this.onMouseOut()} />
+          <Button type='dashed' shape="circle" icon="copy"/>
         </Tooltip>
       );
     }
