@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table,Tabs,message,Input,Button,Icon} from 'antd';
-import {Inven,fetch} from '../../utils/connect'; //库存数量Url
+import {Inven,Inven1,fetch} from '../../utils/connect'; //库存数量Url
 import '../../styles/inven.css';
 const TabPane = Tabs.TabPane;
 
@@ -24,7 +24,7 @@ class Inventory extends React.Component{
   }
     //表格组件加载时加载数据
   componentDidMount() {
-    fetch(Inven,this.upState.bind(this));
+    fetch(Inven1,this.upState.bind(this));
   }
     //库存小于30个站点红色显示
     render(){

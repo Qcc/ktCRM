@@ -100,8 +100,8 @@ class LoginForm extends React.Component {
                               rules: [{ required: true, message: '请输入验证码!' }],
                           })(
                               <Row gutter={8}>
-                                  <Col span={12}>
-                                      <Input prefix={<Icon type="question" style={{ fontSize: 13 }} />} placeholder="验证码" />
+                                  <Col span={12}>  
+                                      <Input prefix={<Icon type="question-circle-o" style={{ fontSize: 13 }} />} placeholder="验证码" />
                                   </Col>
                                   <Col span={12}>
                                       <img src={this.props.validateCodeImgURL} id="validate-code-img" title="点击刷新验证码" alt="验证码" style={{cursor: "pointer"}} onClick={this.refreshValidateCode} />

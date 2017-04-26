@@ -1,5 +1,6 @@
 import React from 'react';
 import {Icon,Steps,Input,Modal,Button } from 'antd';
+import {modifyPassword,fetch} from '../../utils/connect';
 import '../../styles/usermod.css';
 const Step = Steps.Step;
 

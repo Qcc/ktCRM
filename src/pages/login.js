@@ -8,10 +8,12 @@ import '../styles/login.css';
 import '../styles/common.css'; 
 
 
-    let urlRoot = 'http://localhost:8080/dinghuo-kouton/';
-    let loginURL = urlRoot + "public/user/login.api";
-    let loginSuccessURL = urlRoot + "protected/main.html";
-    let validateCodeURL = urlRoot + "public/useralidateCode.api";
+    let urlRoot = 'http://192.168.200.104:8080/dinghuo/';
+    let actionURL = urlRoot + "public/user/login.api";
+    // let loginSuccessURL = urlRoot + "protected/main.html";
+    let loginSuccessURL = "http://192.168.200.176:3000/#/main";   
+    let validateCodeURL = urlRoot + "public/user/validateCodeImg.api";
+                                    
     const WrappedNormalLoginForm = Form.create()(LoginForm);
 
 class Login extends React.Component{
@@ -29,9 +31,9 @@ class Login extends React.Component{
                     <span className='login-register'>还没有账户？ <Link to="/register">注册</Link></span>
                  </div>
                  <WrappedNormalLoginForm 
-                 loginURL={loginURL} 
+                 actionURL={actionURL} 
                  loginSuccessURL={loginSuccessURL} 
-                 validateCodeURL={validateCodeURL} />            
+                 validateCodeImgURL={validateCodeURL} />            
                </div>
                <KtFooterComp />
             </div>
