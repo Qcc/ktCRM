@@ -1,49 +1,99 @@
-import { Popconfirm, Switch, message } from 'antd';
+import { Form, Input, DatePicker, Col } from 'antd';
+const FormItem = Form.Item;
 
-class App extends React.Component {
-  state = {
-    visible: false,
-    condition: true,   // Whether meet the condition, if not show popconfirm.
-  }
-  changeCondition = (value) => {
-    this.setState({ condition: value });
-  }
-  confirm = () => {
-    this.setState({ visible: false });
-    message.success('Next step.');
-  }
-  cancel = () => {
-    this.setState({ visible: false });
-    message.error('Click on cancel.');
-  }
-  handleVisibleChange = (visible) => {
-    if (!visible) {
-      this.setState({ visible });
-      return;
-    }
-    // Determining condition before show the popconfirm.
-    console.log(this.state.condition);
-    if (this.state.condition) {
-      this.confirm();  // next step
-    } else {
-      this.setState({ visible });  // show the popconfirm
-    }
-  }
-  render() {
-    return (
-      <div>
-        <Popconfirm 
-          visible={false}  
-          onConfirm={this.confirm}  
-        >
-          <a href="#">Delete a task</a>
-        </Popconfirm>
-        <br />
-        <br />
-        Whether directly execute：<Switch defaultChecked onChange={this.changeCondition} />
-      </div>
-    );
-  }
-}
+const formItemLayout = {
+  labelCol: {
+    xs: { span: 24 },
+    sm: { span: 5 },
+  },
+  wrapperCol: {
+    xs: { span: 24 },
+    sm: { span: 12 },
+  },
+};
 
-ReactDOM.render(<App />, mountNode);
+ReactDOM.render(
+  <Form>
+    <FormItem
+      {...formItemLayout}
+      label="Fail"
+      validateStatus="error"
+      help="Should be combination of numbers & alphabets"
+    >
+      <Input placeholder="unavailable choice" id="error" />
+    </FormItem>
+
+    <FormItem
+      {...formItemLayout}
+      label="Warning"
+      validateStatus="warning"
+    >
+      <Input placeholder="Warning" id="warning" />
+    </FormItem>
+
+    <FormItem
+      {...formItemLayout}
+      label="Validating"
+      hasFeedback
+      validateStatus="validating"
+      help="The information is being validated..."
+    >
+      <Input placeholder="I'm the content is being validated" id="validating" />
+    </FormItem>
+
+    <FormItem
+      {...formItemLayout}
+      label="Success"
+      hasFeedback
+      validateStatus="success"
+    >
+      <Input placeholder="I'm the content" id="success" />
+    </FormItem>
+
+    <FormItem
+      {...formItemLayout}
+      label="Warning"
+      hasFeedback
+      validateStatus="warning"
+    >
+      <Input placeholder="Warning" id="warning" />
+    </FormItem>
+
+    <FormItem
+      {...formItemLayout}
+      label="Fail"
+      hasFeedback
+      validateStatus="error"
+      help="Should be combination of numbers & alphabets"
+    >
+      <Input placeholder="unavailable choice" id="error" />
+    </FormItem>
+
+    <FormItem
+      label="inline"
+      labelCol={{
+        xs: { span: 24 },
+        sm: { span: 5 },
+      }}
+      wrapperCol={{
+        xs: { span: 24 },
+        sm: { span: 19 },
+      }}
+      help
+    >
+      <Col span="6">
+        <FormItem validateStatus="error" help="Please select the correct date">
+          <DatePicker />
+        </FormItem>
+      </Col>
+      <Col span="1">
+        <p className="ant-form-split">-</p>
+      </Col>
+      <Col span="6">
+        <FormItem>
+          <DatePicker />
+        </FormItem>
+      </Col>
+    </FormItem>
+  </Form>
+, mountNode);

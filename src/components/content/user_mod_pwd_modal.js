@@ -1,270 +1,259 @@
 import React from 'react';
-import {Icon,Steps,Input,Modal,Button } from 'antd';
-import {modifyPassword,fetch} from '../../utils/connect';
+import {Icon,Input,Modal,Button,Row,Col,Form } from 'antd';
+import {modifyPassword,validateCodeImgURL,fetch} from '../../utils/connect';
 import '../../styles/usermod.css';
-const Step = Steps.Step;
+const FormItem = Form.Item;
 
-//第一步校验密码
-class StepFrist extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            pwdInputValue: '', //input 框的 value
-        };
-    }
-      //清空密码框
-    emitEmpty = () => {
-        this.pwdInput.focus();
-        this.setState({ pwdInputValue: '' });
-    }
-    //绑定state与input的value
-    onChangePwdValue = (e) => {
-        this.setState({ pwdInputValue: e.target.value });
-    } 
-    
-    render(){
-        const { pwdInputValue } = this.state;
-        const suffix = pwdInputValue ? <Icon className='anticon-close-circle' type="close-circle" onClick={this.emitEmpty} /> : null;
-        return(
-            <div>
-                <p style={{fontSize:16}}>需要验证当前密码才能继续:</p>
-                <Input
-                    style={{marginTop:5,marginBottom:5}}
-                    placeholder="请输入密码"
-                    type='password'
-                    prefix={<Icon type="unlock" />}
-                    suffix={suffix}
-                    value={pwdInputValue}
-                    onChange={this.onChangePwdValue}
-                    ref={node => this.pwdInput = node}
-                />
-          </div>
-        );
-    }
-}
-//第二步，输入新密码并确认
-class StepSecond extends React.Component{
-   constructor(props) {
-        super(props);
-        this.state = {
-            pwdInputValue: '', //input 框的 value
-            newPwdInputValue: '', //input 框的 value
-        };
-    }
-
-    //props参数校验
-    static propTypes = {
-        disabled: React.PropTypes.bool.isRequired,
-    };
-
-      //清空密码框
-    emitEmpty = () => {
-        this.pwdInput.focus();
-        this.setState({ pwdInputValue: '' });
-    }
-    //清空密码框
-    newEmitEmpty = () => {
-        this.newPwdInput.focus();
-        this.setState({ newPwdInputValue: '' });
-    }
-    //清空两个密码框，父组件 重新输入 按钮调用
-    emptyAll(){
-        this.pwdInput.focus();
-        this.setState({ pwdInputValue: '' });
-        this.setState({ newPwdInputValue: '' });             
-    }
-    //绑定state与input的value
-    onChangePwdValue = (e) => {
-        this.setState({ pwdInputValue: e.target.value });
-    }
-    //绑定state与input的value
-    onChangeNewPwdValue = (e) => {
-        this.setState({ newPwdInputValue: e.target.value });
-    }
-    
-    render(){
-        const { pwdInputValue,newPwdInputValue } = this.state;
-        const suffix = pwdInputValue ? <Icon className='anticon-close-circle' type="close-circle" onClick={this.emitEmpty} /> : null;
-        const newSuffix = newPwdInputValue ? <Icon className='anticon-close-circle' type="close-circle" onClick={this.newEmitEmpty} /> : null;
-        return(
-            <div>
-                <p style={{fontSize:16}}>输入新密码:</p>
-                <Input
-                    disabled={this.props.disabled}
-                    style={{marginTop:5,marginBottom:5}}
-                    placeholder="请输入新密码"
-                    type='password'
-                    prefix={<Icon type="unlock" />}
-                    suffix={suffix}
-                    value={pwdInputValue}
-                    onChange={this.onChangePwdValue}
-                    ref={node => this.pwdInput = node}
-                />
-                <p style={{fontSize:16}}>确认新密码:</p>
-                <Input
-                    disabled={this.props.disabled}
-                    style={{marginTop:5,marginBottom:5}}
-                    placeholder="请确认密码"
-                    type='password'
-                    prefix={<Icon type="unlock" />}
-                    suffix={newSuffix}
-                    value={newPwdInputValue}
-                    onChange={this.onChangeNewPwdValue}
-                    ref={node => this.newPwdInput = node}
-                />
-          </div>
-        );
-    }
-}
-// 修改完成
-// class StepThird extends React.Component{
-//     render(){
-//         return(
-//         <p>步骤三</p>
-//         )
-//     }
-// }
-
-//清空密码框对象引用
-const pwdInput={}
-//步骤条三种状态
-const steps = [{
-                content: <StepFrist />, //第一步，确认密码
-            }, 
-            {
-                content: <StepSecond disabled={false} ref={node => pwdInput.restPwd = node}/>, //修改新密码,restPwdinput为回调子组件引用
-            }, 
-            {
-                content: <StepSecond disabled={true}/>, // 禁用input 完成
-            }];
 //修改密码模态框
 class UserModPwdModal extends React.Component{
     constructor(props) {
         super(props);
         this.state = {
-            current: 0, //修改密码步骤条位置
             modPwdVisible:false, //整个模态框是否可见
             loading:false,//提交按钮 加载中
+            oldPwdInputValue: '', //旧密码
+            newPwdInputValue: '', //新密码
+            newRepPwdInputValue: '', //重复新密码
+            validateMode: 0, //修改密码错误超过3次需要验证码
+            //修改密码表单组件状态
+            formValid:{oldpwdValidateStatus:'',
+                       oldpwHelp:'',
+                       newPwdValidateStatus:'',
+                       newPwdHelp:'',
+                       repPwdValidateStatus:'',
+                       repPwdHelp:'',
+                       validateCodeValidateStatus:'',
+                       validateCodeHelp:'',
+                    }
         };
     }
 
     //关闭修改密码模态框
-    modPwdCancel=(e)=>{this.setState({modPwdVisible:false})}
+    modPwdCancel=(e)=>{this.setState({modPwdVisible:false,loading:false})}
     //打开修改密码模态框，父组件调用
-    modPwdOpen=(e)=>{this.setState({modPwdVisible:true})}
-    
-     //修改密码下一步handle，需校验密码
-    next(e) {
-        this.setState({ current:1 });
-        //需要校验密码继续
-        console.log('下一步-当前是：'+this.state.current);
+    modPwdOpen=(e)=>{
+        this.setState({modPwdVisible:true});
+        this.oldPwdInput.focus();
     }
-    //第二步 重新输入 按钮回调
-    rest(e) {pwdInput.restPwd.emptyAll();}
-
-    //确认修改密码，需要确认密码是否一致，密码是否符合要求
-    modify(e){
-        console.log('确认-当前是：'+this.state.current);
-        this.setState({
-            loading:true,
-            current:2,
-        });
-        setTimeout(()=>{
-            this.setState({
-            loading:true,
-            modPwdVisible:false,
-            current:0
-                }); 
-            Modal.success({title: '完成！',content: '密码修改成功。'});
-            },3000);
+   /* //删除当前输入input内容
+    emitEmptyOldInput = () => {
+        this.oldPwdInput.focus();
+        this.setState({ oldPwdInputValue: '' });
     }
-
-    render(){
-        return(
-        <Modal title="修改密码"
-           maskClosable={false} //点击遮罩层不允许关闭模态框 
-           visible={this.state.modPwdVisible} //模态框是否可见
-           onCancel={this.modPwdCancel} //关闭按钮handle
-           footer={null}> 
-           <Steps  current={this.state.current}>
-             <Step  title="验证密码" />
-             <Step  title="修改密码" />
-             <Step  title="完成" />
-           </Steps>
-           <br />
-           <div className="steps-content">{steps[this.state.current].content}</div>
-           <div className="steps-action"> 
-              {this.state.current === 0 && <Button type="primary" onClick={() => this.next()}>下一步</Button>}
-              {this.state.current === 1 && <span>
-                <Button type="primary" onClick={()=>this.modify()} >确认修改</Button>
-                <Button style={{ marginLeft: 8 }}  onClick={() => this.rest()}> 重新输入 </Button></span>}
-              {this.state.current === 2 && <Button type="primary" loading={this.state.loading} >完成</Button>}
-           </div>
-        </Modal>
-        );
+    emitEmptyNewInput = () => {
+        this.newPwdInput.focus();
+        this.setState({ newPwdInputValue: '' });
     }
-}
-
-
-export default UserModPwdModal;
-
-/*
-class UserModPwdModal extends React.Component{
-    constructor(props) {
-        super(props);
-        this.state = {
-            modPwdSteps:0,//修改密码步骤条位置
-            modPwdVisible:false,
-            pwdInputValue: '',
-        };
-    }
-    //清空密码框
-    emitEmpty = () => {
-        this.pwdInput.focus();
-        this.setState({ pwdInputValue: '' });
+    emitEmptyRepNewInput = () => {
+        this.newRepPwdInput.focus();
+        this.setState({ newRepPwdInputValue: '' });
+    }*/
+    //清空三个密码框
+    emptyAll=()=>{
+        this.oldPwdInput.focus();
+        this.setState({ 
+            oldPwdInputValue: '',
+            newPwdInputValue: '',
+            newRepPwdInputValue: '' 
+                    });             
     }
     //绑定state与input的value
-    onChangePwdValue = (e) => {
-        this.setState({ pwdInputValue: e.target.value });
-    } 
-    //关闭修改密码模态框
-    modPwdCancel=(e)=>{this.setState({modPwdVisible:false})}
-    //打开修改密码模态框，父组件调用
-    modPwdOpen=(e)=>{this.setState({modPwdVisible:true})}
-     //修改密码模态框下一步handle，需校验密码
-    modPwdNext=(e)=>{
-        console.log(this.state.pwdInputValue);
-        //校验密码继续下一步
-        this.setState({
-            modPwdSteps:1
-        });
+    onChangeOldPwdValue = (e) => {
+        this.setState({ oldPwdInputValue: e.target.value });
+        if(this.state.oldPwdInputValue){
+            this.setState({
+                formValid:{
+                       oldpwdValidateStatus:'success',
+                       oldpwHelp:'',
+                    }
+            });
+        }
+        console.log("旧密码-----",this.state.oldPwdInputValue);
     }
-     
-    render(){
-        const { pwdInputValue } = this.state;
-        const suffix = pwdInputValue ? <Icon className='anticon-close-circle' type="close-circle" onClick={this.emitEmpty} /> : null;
+    //绑定state与input的value
+    onChangeNewPwdValue = (e) => {
+        this.setState({ newPwdInputValue: e.target.value });
+        if(this.state.newPwdInputValue.length<6){
+            this.setState({
+                formValid:{
+                       newPwdValidateStatus:'warning',
+                       newPwdHelp:'密码密码不够安全，建议6~14位',
+                    }
+            });
+        }
+        if(this.state.newPwdInputValue.length>6){
+            this.setState({
+                formValid:{
+                       newPwdValidateStatus:'success',
+                       newPwdHelp:'',
+                    }
+            });
+        }
+        console.log("新密码-----",this.state.newPwdInputValue);
+    }
+    //绑定state与input的value
+    onChangeNewRepPwdValue = (e) => {
+        this.setState({ newRepPwdInputValue: e.target.value });
+        if(this.state.newRepPwdInputValue !== this.state.newPwdInputValue){
+            this.setState({
+                formValid:{
+                       repPwdValidateStatus:'error',
+                       repPwdHelp:'两次输入的密码不一致，请检查后重新输入。',
+                    }
+            });
+        };
+        if(this.state.newRepPwdInputValue === this.state.newPwdInputValue){
+            this.setState({
+                formValid:{
+                       repPwdValidateStatus:'success',
+                       repPwdHelp:'',
+                       newPwdValidateStatus:'success',
+                       newPwdHelp:'',
+                    }
+            });
+        }
+        console.log("重复新密码-----",this.state.newRepPwdInputValue);
+        console.log("this.state.newRepPwdInputValue=",this.state.newRepPwdInputValue,"this.state.newPwdInputValue = ",this.state.newPwdInputValue);
+    } 
+    //修改密码回调处理函数
+    update =(data)=>{
+        this.setState({
+            modPwdVisible:false,
+            loading:false,
+        });
+        if(data.status !== 200 || data.errorCode !== 0){
+            Modal.error({title: '错误！',content: '密码未修改，请稍后再试！'});
+            this.setState({
+                    validateMode:this.state.validateMode+1,
+                });
+            console.log('this.state.validateMode ',this.state.validateMode);
+            return;
+        }else{
+            Modal.success({title: '完成！',content: '密码修改成功。'});            
+        }
+    }
+    //确定修改密码
+    makeModPwd=(e)=>{
+        const {oldPwdInputValue,newPwdInputValue,newRepPwdInputValue} = this.state;
+        if(!oldPwdInputValue || !newPwdInputValue|| !newRepPwdInputValue){
+            this.setState({
+                formValid:{
+                       oldpwdValidateStatus:'error',
+                       oldpwHelp:'请输入密码',
+                       newPwdValidateStatus:'error',
+                       newPwdHelp:'请输入新密码',
+                       repPwdValidateStatus:'error',
+                       repPwdHelp:'请确认密码',
+                       validateCodeValidateStatus:'error',
+                       validateCodeHelp:'请输入验证码',
+                    }
+            });
+            return;
+        }
+        this.setState({
+            loading:true,
+        });
+        let params ={oldPassword:oldPwdInputValue,newPassword:newRepPwdInputValue}
+        fetch(modifyPassword,this.update,'post',params);
+    }
+    //刷新验证码
+    refreshValidateCode = (e) => {
+        var img = document.getElementById('validate-code-img');
+        if(img){
+            img.src = validateCodeImgURL + "?nocache=" + new Date().getTime();
+        }
+    }
+    //验证码Form.Item 输入密码错误三次 需要输入验证码
+    visibaleValidateCode=()=>{
+        if(this.state.validateMode<3)return;
         return(
-        <Modal title="修改密码"
+            <FormItem
+               label="验证码"
+               hasFeedback
+               validateStatus={this.state.formValid.validateCodeValidateStatus}
+               help={this.state.formValid.validateCodeHelp}
+               >
+                <Row gutter={8}>
+                    <Col span={12}>  
+                        <Input prefix={<Icon type="question-circle-o" style={{ fontSize: 13 }} />} placeholder="验证码" />
+                    </Col>
+                    <Col span={12}>
+                        <img src={validateCodeImgURL} id="validate-code-img" title="点击刷新验证码" alt="验证码" style={{cursor: "pointer"}} onClick={this.refreshValidateCode} />
+                    </Col>
+                </Row>
+            </FormItem>
+                );
+    }
+    render(){
+        const { oldPwdInputValue,newPwdInputValue,newRepPwdInputValue} = this.state;
+        //const suffixOldInput = oldPwdInputValue ? <Icon type="close-circle" onClick={this.emitEmptyOldInput} /> : null;
+        //const suffixNewInput = newPwdInputValue ? <Icon type="close-circle" onClick={this.emitEmptyNewInput} /> : null;
+        //const suffixNewRepInput = newRepPwdInputValue ? <Icon type="close-circle" onClick={this.emitEmptyRepNewInput} /> : null;
+        return(
+        <Modal title="需要验证当前密码才能继续"
            maskClosable={false} //点击遮罩层不允许关闭模态框 
            visible={this.state.modPwdVisible} //模态框是否可见
-           onCancel={this.modPwdCancel} //关闭按钮handle
-           footer={<Button onClick={this.modPwdNext}  type="primary">下一步</Button>}> 
-          <Steps  current={this.state.modPwdSteps}>
-            <Step title="验证密码" />
-            <Step title="修改密码" />
-            <Step title="完成" />
-          </Steps>
-          <br />
-          <p style={{fontSize:16}}>需要验证当前密码才能继续:</p>
-          <Input
-                placeholder="请输入密码"
-                type='password'
-                prefix={<Icon type="unlock" />}
-                suffix={suffix}
-                value={pwdInputValue}
-                onChange={this.onChangePwdValue}
-                ref={node => this.pwdInput = node}
-          />
+           onCancel={this.modPwdCancel}
+           footer={<div>
+                     <Button size='large' onClick={this.modPwdCancel}>取消</Button>
+                     <Button size='large'  type="dashed" onClick={this.emptyAll}>重置</Button>
+                     <Button size='large'  type="primary" loading={this.state.loading} onClick={this.makeModPwd}>确定</Button></div>}
+           > 
+           <Form>
+                <FormItem
+                    label="旧密码"
+                    hasFeedback
+                    validateStatus={this.state.formValid.oldpwdValidateStatus}
+                    help={this.state.formValid.oldpwHelp}
+                    >
+                    <Input
+                        style={{marginTop:5,marginBottom:5}}
+                        placeholder="请输入密码"
+                        type='password'
+                        prefix={<Icon type="unlock" />}
+                        //suffix={suffixOldInput}
+                        value={oldPwdInputValue}
+                        onChange={this.onChangeOldPwdValue}
+                        ref={node => this.oldPwdInput = node}
+                />
+                </FormItem>
+                <FormItem
+                    label="新密码"
+                    hasFeedback
+                    validateStatus={this.state.formValid.newPwdValidateStatus}
+                    help={this.state.formValid.newPwdHelp}
+                    >
+                    <Input
+                        style={{marginTop:5,marginBottom:5}}
+                        placeholder="请输入新密码,建议6~14位"
+                        type='password'
+                        prefix={<Icon type="unlock" />}
+                        //suffix={suffixNewInput}
+                        value={newPwdInputValue}
+                        onChange={this.onChangeNewPwdValue}
+                        ref={node => this.newPwdInput = node}
+                />
+                </FormItem>
+                <FormItem
+                    label="确认密码"
+                    hasFeedback
+                    validateStatus={this.state.formValid.repPwdValidateStatus}
+                    help={this.state.formValid.repPwdHelp}
+                    >
+                <Input
+                    //disabled={this.state.validateMode<4?true:false}
+                    style={{marginTop:5,marginBottom:5}}
+                    placeholder="请确认密码，6~14位"
+                    type='password'
+                    prefix={<Icon type="unlock" />}
+                    //suffix={suffixNewRepInput}
+                    value={newRepPwdInputValue}
+                    onChange={this.onChangeNewRepPwdValue}
+                    ref={node => this.newRepPwdInput = node}
+                />
+                </FormItem>
+                    {this.visibaleValidateCode()} 
+            </Form>
         </Modal>
         );
     }
@@ -272,4 +261,3 @@ class UserModPwdModal extends React.Component{
 
 
 export default UserModPwdModal;
-*/

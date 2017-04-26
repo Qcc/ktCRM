@@ -90,7 +90,7 @@ class LoginForm extends React.Component {
         if(img)
             img.src = this.props.validateCodeImgURL + "?nocache=" + new Date().getTime();
     }
-
+    //输入密码错误三次 需要输入验证码
     validateCodeFormItem = () => {
         if(this.state.validateMode === 0)
             return;

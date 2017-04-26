@@ -40,6 +40,8 @@ export function fetch(url,callback,method='GET',params = {}){
 export const querylicense = rootUrl+'/protected/license/queryLicense.api'
 //修改密码
 export const modifyPassword = rootUrl+'/public/user/modifyPassword.api';
+//验证码 api 
+export const validateCodeImgURL = rootUrl + "/public/user/validateCodeImg.api";
 //获取临时授权完整列表 GET
 export const licTemp = 'http://192.168.200.100:3000/licTemp';
 //查询产品库存
