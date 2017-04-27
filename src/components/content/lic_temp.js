@@ -1,19 +1,19 @@
 import React from 'react';
-import reqwest from 'reqwest';
 import {Button,Table, Input,InputNumber ,DatePicker, 
-        Icon,message,Modal,Form,Radio,Tooltip,Select} from 'antd';
+        Icon,Modal,Form,Radio,Tooltip} from 'antd';
 import '../../styles/lictemp.css';
-import {licTemp} from '../../utils/connect';
+import {licenseCount,licensePager,generateTrail,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
+const RadioGroup = Radio.Group;
 //修改授权码模态框
 const formItemLayout = {
   labelCol: {
     xs: { span: 24 },
-    sm: { span: 5 },
+    sm: { span: 6},
   },
   wrapperCol: {
     xs: { span: 24 },
-    sm: { span: 12 },
+    sm: { span: 16 },
   },
 };
 
@@ -40,13 +40,26 @@ class CopyIcon extends React.Component{
 
 //申请临时授权界面
 class AskTemlLicModal extends React.Component{
-
-  state={
-    askTempLoading: false, //修改申请授权模态框加载状态
-    askTempVisible: false, //修改申请模态框是否可见
-    confirmDirty: false,
-  };
-
+  constructor(){
+    super()
+    this.state={
+      askTempLoading: false, //修改申请授权模态框加载状态
+      askTempVisible: false, //修改申请模态框是否可见
+      productId:3,// 1.CTBS高级版 2.CTBS企业版 3.云桌面
+      endUserCompany:'',//终端用户公司名称
+      endUserEmail:'',//终端用户邮箱
+      endUserName:'',//终端用户联系人
+      endUserPhone:'',//终端用户电话
+      endUserAddress:'',//终端用户地址
+    };
+  }
+  
+  //表单input数据映射到state
+  endUserCompany=(e)=>{this.setState({endUserCompany:e.target.value});}
+  endUserEmail=(e)=>{this.setState({endUserEmail:e.target.value});}
+  endUserName=(e)=>{this.setState({endUserName:e.target.value});}
+  endUserPhone=(e)=>{this.setState({endUserPhone:e.target.value});}
+  endUserAddress=(e)=>{this.setState({endUserAddress:e.target.value});}
 
   //显示申请临时授权模态框界面
   showModal = () => {
@@ -54,20 +67,54 @@ class AskTemlLicModal extends React.Component{
       askTempVisible: true,
     });
   }
+ //申请临时授权回调
+  trailUpdate=(data)=>{
+    console.log("申请临时授权码："+JSON.stringify(data,null,4));
+    this.setState({ askTempLoading: false, askTempVisible: false });
+    if(data.status !== 200){
+      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+      return;    
+    };
+    if(data.errorCode !== 0){
+     Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+     return;
+    }
+     Modal.success({title: '错误！',content:<CopyIcon cdk={data.entity.key}/>});
+     //申请成功，清除表单数据。
+     this.setState({
+      endUserCompany:'',//终端用户公司名称
+      endUserEmail:'',//终端用户邮箱
+      endUserName:'',//终端用户联系人
+      endUserPhone:'',//终端用户电话
+      endUserAddress:'',//终端用户地址
+     });    
+  }
   //确认申请临时授权
   handleOk = () => {
+    let {productId,
+      endUserCompany,
+      endUserEmail,
+      endUserName,
+      endUserPhone}=this.state;
     this.setState({ askTempLoading: true });
-    setTimeout(() => {
-      this.setState({ askTempLoading: false, askTempVisible: false });
-      let cdk='XXXX-XXXX-XXXX-XXXX';
-      Modal.success({title: '申请成功！授权码：',content:<CopyIcon cdk={cdk}/>});
-    }, 3000);
+    let params = {productId:productId,
+      endUserCompany:endUserCompany,
+      endUserEmail:endUserEmail,
+      endUserName:endUserName,
+      endUserPhone:endUserPhone,}
+      //请求数据
+    fetch(generateTrail,this.trailUpdate,params);
   }
   //取消申请临时授权
   handleCancel = () => {
     this.setState({ askTempVisible: false });
   }
- 
+  //选择申请授权的产品
+  handleProductChange = (e)=>{
+    this.setState({
+      productId: e.target.value,
+    });
+  }
   render() {
     return (
        <Modal
@@ -88,15 +135,11 @@ class AskTemlLicModal extends React.Component{
                      required
                      validateStatus="success"
                    >
-                      <Select
-                        defaultValue="cloudapp"
-                        style={{ width: '50%' }}
-                        onChange={this.handleCurrencyChange}
-                      >
-                       <Option value="cloudapp">沟通云桌面</Option>
-                       <Option value="ctbsdev">CTBS高级版</Option>
-                       <Option value="ctbsenterprise">CTBS企业版</Option>                       
-                     </Select>
+                       <RadioGroup onChange={this.handleProductChange} value={this.state.productId}>
+                          <Radio value={3}>沟通云桌面</Radio>
+                          <Radio value={1}>CTBS高级版</Radio>
+                          <Radio value={2}>CTBS企业版</Radio>
+                        </RadioGroup>
                    </FormItem>
                  
                    <FormItem
@@ -106,7 +149,7 @@ class AskTemlLicModal extends React.Component{
                      hasFeedback
                      validateStatus="success"
                    >
-                     <InputNumber defaultValue={3} min={1} max={100}  id="validating" />
+                     <InputNumber disabled defaultValue={3} min={1} max={100}  id="validating" />
                    </FormItem>
                  
                    <FormItem
@@ -116,22 +159,22 @@ class AskTemlLicModal extends React.Component{
                      hasFeedback
                      validateStatus="success"
                    >
-                     <InputNumber defaultValue={15} min={1} max={15}  id="validating" />
-                   </FormItem>
-                 
-                   <FormItem
-                     {...formItemLayout}
-                     label="授权接收邮箱"
-                     hasFeedback
-                   >
-                     <Input placeholder="客户邮箱" id="warning" />
+                     <InputNumber disabled defaultValue={15} min={1} max={15}  id="validating" />
                    </FormItem>
                    
                    <FormItem
                      {...formItemLayout}
                      label="公司名称"
                    >
-                     <Input placeholder="客户公司名称" id="error" />
+                     <Input onChange={this.endUserCompany} value={this.state.endUserCompany} placeholder="客户公司名称" id="error" />
+                   </FormItem>
+                   
+                   <FormItem
+                     {...formItemLayout}
+                     label="邮箱"
+                     hasFeedback
+                   >
+                     <Input onChange={this.endUserEmail} value={this.state.endUserEmail} placeholder="客户邮箱" id="warning" />
                    </FormItem>
 
                    <FormItem
@@ -139,7 +182,7 @@ class AskTemlLicModal extends React.Component{
                      label="联系人"
                      hasFeedback
                    >
-                     <Input placeholder="客户联系人" id="error" />
+                     <Input onChange={this.endUserName} value={this.state.endUserName} placeholder="客户联系人" id="error" />
                    </FormItem>
                    
                    <FormItem
@@ -147,7 +190,7 @@ class AskTemlLicModal extends React.Component{
                      label="手机"
                      hasFeedback
                    >
-                     <Input placeholder="客户手机" id="error" />
+                     <Input onChange={this.endUserPhone} value={this.state.endUserPhone} placeholder="客户手机" id="error" />
                    </FormItem>
 
                     <FormItem
@@ -155,10 +198,12 @@ class AskTemlLicModal extends React.Component{
                      label="地址"
                      hasFeedback
                    >
-                     <Input placeholder="客户地址" id="error" />
+                     <Input onChange={this.endUserAddress} value={this.state.endUserAddress} placeholder="客户地址" id="error" />
                    </FormItem>
              </Form>
-             <p>提示:请务必正确填写完整，当前填写信息将作为以后找回授权码、解除绑定等重要操作的依据。</p>
+             <div className='temp-lic-tips'>
+                <p><span>提示 ：</span>请务必将信息正确填写完整，当前填写信息将作为以后找回授权码、解除绑定等重要操作的依据。</p>
+             </div>
         </Modal>
     );
   }
@@ -269,13 +314,13 @@ class ModCdkModal extends React.Component{
                     </Radio.Group>
                  </FormItem>
                </Form>
-               <p>提示：临时授权站点数最多授权100个站点最少1个，每个授权只能延期2次，每次最多7天！</p>
+               <div className='temp-lic-tips'><p><span>提示 ：</span>临时授权站点数最多授权100个站点最少1个，每个授权只能延期2次，每次最多7天！</p></div>
             </Modal>
     );
   }
 }
 
-
+// ===================================================================================================
 //数据表
 class FilterTable extends React.Component {
   state = {
@@ -285,11 +330,30 @@ class FilterTable extends React.Component {
     searchCustomerText: '',  //筛选客户名称 input value  
     cdkFiltered: false, //cdk筛选icon 颜色
     customerFiltered: false, //客户名称筛选icon 颜色
-    data: [], //表数据
-    pagination: {}, //分页器
     loading: false, //表格加载状态
+    doubleClick:false,//模拟表格双击事件
+    pagination: { //分页器
+                  showSizeChanger:true, //是否可设置每页显示多少行
+                  defaultCurrent:1, //默认页码
+                  defaultPageSize:10,//默认每页显示多少行
+                  total:0, //总行数
+                  showQuickJumper:true, //可快速跳转到指定页码
+                  onChange:this.paginationOnChange,//页面改变后的回调函数
+                  onShowSizeChange:this.paginationOnShowSizeChange, //pageSize 变化的回调
+                  pageSizeOptions:[10,20,40,60,100]//每页可显示多少行
+                }, //分页器
+    data: [] //表数据
     
   };
+  //页面改变后的回调函数
+  paginationOnChange(page, pageSize){
+    
+      console.log("page,pageSize",page,pageSize);
+  }
+  //pageSize 变化的回调
+  paginationOnShowSizeChange(current, size){
+    console.log("current, size",current, size);
+  }
 
     //表格变化后重新加载数据
   handleTableChange = (pagination, filters, sorter) => {
@@ -298,47 +362,69 @@ class FilterTable extends React.Component {
     this.setState({
       pagination: pager,
     });
-    this.fetch({
-      results: pagination.pageSize,
-      page: pagination.current,
-      sortField: sorter.field,
-      sortOrder: sorter.order,
-      ...filters,
-    });
+    console.log("pagination, filters, sorter",pagination, filters, sorter);
   }
-  fetch = (method='GET',params = {}) => {
-    console.log("调用了fecth =",'licTemp',licTemp,'method',method,'params:', params);
-    this.setState({ loading: true });
-    reqwest({
-      url: licTemp,
-      method: method,
-      data: {
-        //results: 10,
-        ...params,
-      },
-      type: 'json',
-    }).then((data) => {
-      //发生网络错误时，清空不可靠的数据
-      if(data.errorCode){
-        console.log("errorCode:",data.errorCode,"message:",data.message );
-        message.error('网络发生错误，请刷新(F5)重试！');
-        data.entity=[];
-        data.allRecord=[];
-      }
-      const pagination = { ...this.state.pagination };
-      // Read total count from server
-      pagination.total = data.allRecord;
-      //pagination.total = 200;
-      this.setState({
-        loading: false,
-        data: data.entity,
-        pagination,
-      });
+  //获取授权总数
+  licCountUpdate=(data)=>{
+    if(data.status !== 200){
+      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+      return;    
+    };
+    if(data.errorCode !== 0){
+     Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+     return;
+    }
+    this.setState({
+        pagination:{
+            total:data.entity
+        }
+    });
+    console.log("licCountUpdate ", data);
+  }
+  //获取表数据，填充数据
+  licPagerUpdate=(data)=>{
+    if(data.status !== 200){
+      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+      return;    
+    };
+    if(data.errorCode !== 0){
+     Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+     return;
+    }
+    let entity = data.entity;
+    let tableData=[];
+    for(let i =0;i<data.entity.length;i++){
+      // tableItem.key = entity[i].key;
+      // tableItem.expirationDate = entity[i].expirationDate;
+      // tableItem.userNumber = entity[i].userNumber;
+      // tableItem.productName = entity[i].product.productName;
+      // tableItem.activation = entity.activation?'已激活':'未激活';
+      // tableItem.endUserCompany = entity.endUserCompany;
+      tableData.push({key:entity[i].key,
+                      expirationDate:entity[i].expirationDate,
+                      userNumber:entity[i].userNumber,
+                      productName:entity[i].product.productName,
+                      activation:entity.activation?'已激活':'未激活',
+                      endUserCompany:entity.endUserCompany,
+                });
+      console.log("tableItem "+{key:entity[i].key,
+                      expirationDate:entity[i].expirationDate,
+                      userNumber:entity[i].userNumber,
+                      productName:entity[i].product.productName,
+                      activation:entity.activation?'已激活':'未激活',
+                      endUserCompany:entity.endUserCompany,
+                });
+    }
+    console.log("licPagerUpdate 收到的数据 ",data);
+    console.log("licPagerUpdate 整理后的state ",tableData);
+    this.setState({
+        data:tableData
     });
   }
   //表格组件加载时加载数据
   componentDidMount() {
-    this.fetch();
+    fetch(licenseCount,this.licCountUpdate,{type:0,});
+    fetch(licensePager,this.licPagerUpdate,{type:0,pageNO:1,size:10});//默认    
   }
 
   //表头筛选部分
@@ -389,8 +475,8 @@ class FilterTable extends React.Component {
     const { searchCustomerText } = this.state;
     const reg = new RegExp(searchCustomerText, 'gi');
     //筛选后重新加载数据
-    let params = `cdkey=${searchCustomerText}`;
-    this.fetch(params);
+    //let params = `cdkey=${searchCustomerText}`;
+    //this.fetch(params);
 
     this.setState({
       filterCustomerVisible: false,
@@ -414,9 +500,16 @@ class FilterTable extends React.Component {
     });
   }
   //单击行 显示 模态框 修改授权，加站，延期
-  onRowClick(record){
-      console.log('111',record);  
-      this.refsModCdkModal.showModal(record);
+  onRowClick=(record)=>{
+      if(this.state.doubleClick){
+        console.log('111',record);  
+        this.refsModCdkModal.showModal(record);
+      }
+    this.setState({
+      doubleClick:true
+    });
+    //模拟双击键
+    setTimeout(()=>{this.setState({doubleClick:false})},300);
   }
   
 
@@ -424,8 +517,8 @@ class FilterTable extends React.Component {
     //筛选input后缀，清除数据
     const columns = [{
       title: '授权码',
-      dataIndex: 'cdkey',
-      key: 'cdkey',
+      dataIndex: 'key',
+      key: 'key',
       //搜索CDK筛选
       filterDropdown: (
         <div className="custom-filter-dropdown">
@@ -444,8 +537,8 @@ class FilterTable extends React.Component {
       onFilterDropdownVisibleChange: visible => this.setState({ filterCdkVisible: visible }, () => this.searchCdkInput.focus()),
     }, {
       title: '客户名称',
-      dataIndex: 'customer',
-      key: 'customer',
+      dataIndex: 'endUserCompany',
+      key: 'endUserCompany',
       //搜索客户名称筛选
       filterDropdown: (
         <div className="custom-filter-dropdown">
@@ -464,8 +557,8 @@ class FilterTable extends React.Component {
       onFilterDropdownVisibleChange: visible => this.setState({ filterCustomerVisible: visible }, () => this.searchCustomerInput.focus()),
     }, {
       title: '产品',
-      dataIndex: 'product',
-      key: 'product',
+      dataIndex: 'productName',
+      key: 'productName',
       filters: [{ //表头的筛选菜单
         text: 'CTBS高级版',
         value: 'CTBS高级版',
@@ -479,22 +572,22 @@ class FilterTable extends React.Component {
       onFilter: (value, record) => record.product.indexOf(value) === 0,
     }, {
       title: '试用到期',
-      dataIndex: 'trial',
-      key: 'trial',
+      dataIndex: 'expirationDate',
+      key: 'expirationDate',
     }, {
       title: '站点数',
-      dataIndex: 'license',
-      key: 'license',
+      dataIndex: 'userNumber',
+      key: 'userNumber',
     }, {
       title: '激活状态',
-      dataIndex: 'active',
-      key: 'active',
+      dataIndex: 'activation',
+      key: 'activation',
       filters: [{ //表头的筛选菜单
         text: '已激活',
-        value: true,
+        value: 1,
       }, {
         text: '未激活',
-        value: false,
+        value: 0,
       }],
       onFilter: (value, record) => record.active.indexOf(value) === 0,
     }];
@@ -505,7 +598,7 @@ class FilterTable extends React.Component {
         <div>
           <Table 
               columns={columns} 
-              onRowClick={(recode)=>this.onRowClick(recode)} // 单机行 修改cdk模态框
+              onRowClick={this.onRowClick} // 点击行 修改cdk模态框
               dataSource={this.state.data} 
               size="small"
               rowKey={record => record.registered}  //表格行 key 的取值，可以是字符串或一个函数

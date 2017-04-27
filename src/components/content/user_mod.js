@@ -3,18 +3,34 @@ import {Button,Icon } from 'antd';
 import UserModPwdModal from './user_mod_pwd_modal';
 import UserModMailModal from './user_mod_mail_modal';
 import UserModSecurityModal from './user_mod_security_modal';
+import {partenrInfo,partenrAccount,fetch} from '../../utils/connect';
 import '../../styles/usermod.css';
 
 class UserMod extends React.Component{
     state = {
         account:'金牌代理',
-        company:'深圳市沟通科技有限公司', //代理商公司名称
-        phone:'1588877878',
-        contact:'张三',
+        company:'', //代理商公司名称
+        phone:'',
+        contact:'',
         avatar:require('../../static/avatar.jpg'), //用户头像
         level:'金牌代理',
     }
 
+    infoUpdate=(data)=>{
+        this.setState({
+            company:data.entity.name,
+            phone:data.entity.phone,
+        });
+    }
+    accountUpdate=(data)=>{
+        this.setState({
+            contact:data.entity.name,
+        });
+    }
+    componentDidMount() {
+        fetch(partenrInfo,this.infoUpdate);
+        fetch(partenrAccount,this.accountUpdate);        
+    }
     //弹出修改密码模态框,以下三行调用的是同ref回调传入父组件中的 子组件的引用
     modPwdClick=(e)=>{this.userModPwdModal.modPwdOpen();}
     //弹出修改邮箱模态框

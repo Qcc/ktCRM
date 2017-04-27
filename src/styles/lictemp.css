@@ -28,4 +28,12 @@
 .highlight {
   color: #f50;
 }
+.temp-lic-tips{
+  border: 1px #f50 dashed;
+  padding: 5px;
+  margin: 0 30px;
+}
+ .temp-lic-tips span{
+   color: #f50;
+ }
  

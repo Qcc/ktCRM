@@ -88,7 +88,7 @@ class LicQuery extends React.Component{
             return;
         }
         console.log(checked);
-        fetch(querylicense,this.upState.bind(this),'GET',{licKey:this.state.cdKey})
+        fetch(querylicense,this.upState.bind(this),{licKey:this.state.cdKey})
     }
     //展示查询结果，回调
     upState(data){

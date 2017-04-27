@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table,Tabs,message,Input,Button,Icon} from 'antd';
-import {Inven,Inven1,fetch} from '../../utils/connect'; //库存数量Url
+import {Inven1,fetch} from '../../utils/connect'; //库存数量Url
 import '../../styles/inven.css';
 const TabPane = Tabs.TabPane;
 

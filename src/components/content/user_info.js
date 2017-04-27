@@ -1,15 +1,23 @@
 import React from 'react';
 import { Icon,Timeline } from 'antd';
+import {partenrInfo,fetch} from '../../utils/connect';
 import '../../styles/userinfo.css';
 
 class UserInfo extends React.Component{
 
     state = {
-        company:'深圳市沟通科技有限公司', //代理商公司名称
+        company:'', //代理商公司名称
         avatar:require('../../static/avatar.jpg'), //用户头像
         level:'金牌代理',
     }
-
+    update=(data)=>{
+        this.setState({
+            company:data.entity.name,
+        });
+    }
+    componentDidMount() {
+        fetch(partenrInfo,this.update);
+    }
     render(){
 
         return(
