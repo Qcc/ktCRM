@@ -5,26 +5,26 @@ import '../styles/header.css';
 
 const SubMenu = Menu.SubMenu;
 class KtHeaderComp extends React.Component{
-
     state = {
-        current: this.props.active,
-        theme:this.props.theme,
+            current: this.props.active,
+            theme:this.props.theme,
     }
     static propTypes ={
-        active:React.PropTypes.string.isRequired,
-        theme:React.PropTypes.string.isRequired
+        active:React.PropTypes.string,
+        theme:React.PropTypes.string,
     }
 
     componentWillMount(){
          this.setState({
-         theme:this.props.theme ? 'dark' : 'light'
+         theme:this.props.theme ? 'light' : 'dark',
+         current:this.props.active?this.props.active:'',
     });
     }
 
     render(){
         return(
             <Menu
-                selectedKeys={[this.state.current]}
+                selectedKeys={[this.state.current]}   
                 mode="horizontal"
                 theme={this.state.theme}
                 style={{ lineHeight: '64px' }}

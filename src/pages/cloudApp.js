@@ -9,7 +9,7 @@ class CloudApp extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active='cloudApp'/>
+            <KtHeaderComp theme='light' active='cloudApp'/>
             <h1>这是云桌面详情页</h1>
             <KtFooterComp/>
             </div>

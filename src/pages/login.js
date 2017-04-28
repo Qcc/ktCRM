@@ -24,7 +24,7 @@ class Login extends React.Component{
     render(){
         return(
             <div>
-              <KtHeaderComp active='login'/>
+              <KtHeaderComp theme='light' active='login'/>
               <div className='login-continner'>
                  <div className='login-title'>
                     <span className='login-welcome'>欢迎回来</span>

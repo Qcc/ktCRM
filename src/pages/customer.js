@@ -9,7 +9,7 @@ class Customer extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active="customer"/>
+            <KtHeaderComp theme='light' active="customer"/>
             <h1>这是客户须知</h1>
             <KtFooterComp/>
             </div>

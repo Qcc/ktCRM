@@ -20,7 +20,7 @@ class LoginForm extends React.Component {
         actionURL: React.PropTypes.string.isRequired,
         loginSuccessURL: React.PropTypes.string.isRequired,
         validateCodeImgURL: React.PropTypes.string.isRequired,
-        checkValidateCodeURL: React.PropTypes.string.isRequired
+        //checkValidateCodeURL: React.PropTypes.string.isRequired
     };
 
     componentDidMount() {

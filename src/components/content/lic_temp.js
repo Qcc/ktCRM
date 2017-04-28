@@ -2,7 +2,7 @@ import React from 'react';
 import {Button,Table, Input,InputNumber ,DatePicker, 
         Icon,Modal,Form,Radio,Tooltip} from 'antd';
 import '../../styles/lictemp.css';
-import {licenseCount,licensePager,generateTrail,fetch} from '../../utils/connect';
+import {licenseCountPager,generateTrail,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 //修改授权码模态框
@@ -20,7 +20,10 @@ const formItemLayout = {
 //复制申请的临时授权码，小按钮
 class CopyIcon extends React.Component{
     state={text:'复制CDK'}
-
+    //props参数校验
+    static propTypes = {
+        cdk: React.PropTypes.string.isRequired,
+    };
     handleCopy(e){this.setState({text:'复制成功'})}
     onMouseOut(){this.setState({text:'复制CDK'})} 
     render(){
@@ -79,7 +82,7 @@ class AskTemlLicModal extends React.Component{
      Modal.error({title: '错误！',content:'服务器错误,'+data.message});
      return;
     }
-     Modal.success({title: '错误！',content:<CopyIcon cdk={data.entity.key}/>});
+     Modal.success({title: '成功！',content:<CopyIcon cdk={data.entity.key}/>});
      //申请成功，清除表单数据。
      this.setState({
       endUserCompany:'',//终端用户公司名称
@@ -87,7 +90,7 @@ class AskTemlLicModal extends React.Component{
       endUserName:'',//终端用户联系人
       endUserPhone:'',//终端用户电话
       endUserAddress:'',//终端用户地址
-     });    
+     });  
   }
   //确认申请临时授权
   handleOk = () => {
@@ -104,6 +107,7 @@ class AskTemlLicModal extends React.Component{
       endUserPhone:endUserPhone,}
       //请求数据
     fetch(generateTrail,this.trailUpdate,params);
+    
   }
   //取消申请临时授权
   handleCancel = () => {
@@ -220,12 +224,12 @@ class ModCdkModal extends React.Component{
   }
 
   //显示修改cdkey模态框界面
-  showModal = (cdk) => {
+  showModal = (record) => {
     this.setState({
       modCdkvisible: true,
-      cdk:cdk,
+      cdk:record,
     });
-    console.log(this.state.cdk.active);
+    console.log("模态框",record);
   }
   //修改完成后，当点击保存按钮时，更新cdkey
   handleOk = () => {
@@ -320,7 +324,6 @@ class ModCdkModal extends React.Component{
   }
 }
 
-// ===================================================================================================
 //数据表
 class FilterTable extends React.Component {
   state = {
@@ -328,61 +331,42 @@ class FilterTable extends React.Component {
     filterCustomerVisible: false,  //客户名称筛选input是否可见
     searchCdkText: '', //筛选CDK input value
     searchCustomerText: '',  //筛选客户名称 input value  
-    cdkFiltered: false, //cdk筛选icon 颜色
-    customerFiltered: false, //客户名称筛选icon 颜色
+    cdkFiltered: false, //cdk筛选cdk input value
+    customerFiltered: false, //客户名称筛选 input value
     loading: false, //表格加载状态
     doubleClick:false,//模拟表格双击事件
     pagination: { //分页器
                   showSizeChanger:true, //是否可设置每页显示多少行
                   defaultCurrent:1, //默认页码
-                  defaultPageSize:10,//默认每页显示多少行
+                 // defaultPageSize:5,//默认每页显示多少行
+                  pageSize:10, //页显示多少行
                   total:0, //总行数
                   showQuickJumper:true, //可快速跳转到指定页码
-                  onChange:this.paginationOnChange,//页面改变后的回调函数
-                  onShowSizeChange:this.paginationOnShowSizeChange, //pageSize 变化的回调
-                  pageSizeOptions:[10,20,40,60,100]//每页可显示多少行
+                  pageSizeOptions:['10','50','200','500','1000']//每页可显示多少行
                 }, //分页器
     data: [] //表数据
     
   };
-  //页面改变后的回调函数
-  paginationOnChange(page, pageSize){
-    
-      console.log("page,pageSize",page,pageSize);
-  }
-  //pageSize 变化的回调
-  paginationOnShowSizeChange(current, size){
-    console.log("current, size",current, size);
-  }
-
-    //表格变化后重新加载数据
+    //表格变化后重新加载数据 筛选 排序 翻页 除自定义筛选外
   handleTableChange = (pagination, filters, sorter) => {
     const pager = { ...this.state.pagination };
     pager.current = pagination.current;
     this.setState({
       pagination: pager,
+      loading:true,  
     });
-    console.log("pagination, filters, sorter",pagination, filters, sorter);
+    let params = {"type":0,
+                  "pageNO":pagination.current,
+                  "size":pagination.pageSize,
+                  //"activation":,  //激活状态，产品暂不实现网络查询，server端未实现and查询功能
+                  //'product.productId':
+                };
+    console.log("===pagination===,",pagination,"===filters===", filters,"===sorter===", sorter);
+    fetch(licenseCountPager,this.licPagerUpdate,params);
   }
-  //获取授权总数
-  licCountUpdate=(data)=>{
-    if(data.status !== 200){
-      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
-      return;    
-    };
-    if(data.errorCode !== 0){
-     Modal.error({title: '错误！',content:'服务器错误,'+data.message});
-     return;
-    }
-    this.setState({
-        pagination:{
-            total:data.entity
-        }
-    });
-    console.log("licCountUpdate ", data);
-  }
-  //获取表数据，填充数据
+  //获取表数据， 填充数据  加工数据展示
   licPagerUpdate=(data)=>{
+    this.setState({loading:false});    
     if(data.status !== 200){
       Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
       return;    
@@ -391,28 +375,20 @@ class FilterTable extends React.Component {
      Modal.error({title: '错误！',content:'服务器错误,'+data.message});
      return;
     }
-    let entity = data.entity;
+     this.setState({
+         pagination:{
+             total:data.entity.count,
+         }
+     });
+    let entity = data.entity.list;
     let tableData=[];
-    for(let i =0;i<data.entity.length;i++){
-      // tableItem.key = entity[i].key;
-      // tableItem.expirationDate = entity[i].expirationDate;
-      // tableItem.userNumber = entity[i].userNumber;
-      // tableItem.productName = entity[i].product.productName;
-      // tableItem.activation = entity.activation?'已激活':'未激活';
-      // tableItem.endUserCompany = entity.endUserCompany;
-      tableData.push({key:entity[i].key,
-                      expirationDate:entity[i].expirationDate,
-                      userNumber:entity[i].userNumber,
-                      productName:entity[i].product.productName,
-                      activation:entity.activation?'已激活':'未激活',
-                      endUserCompany:entity.endUserCompany,
-                });
-      console.log("tableItem "+{key:entity[i].key,
-                      expirationDate:entity[i].expirationDate,
-                      userNumber:entity[i].userNumber,
-                      productName:entity[i].product.productName,
-                      activation:entity.activation?'已激活':'未激活',
-                      endUserCompany:entity.endUserCompany,
+    for(let i = 0;i < entity.length;i++){
+      tableData.push({'key':entity[i].key,
+                      'expirationDate':entity[i].expirationDate,
+                      'userNumber':entity[i].userNumber,
+                      'productName':entity[i].product.productName,
+                      'activation':entity[i].activation?'已激活':'未激活',
+                      'endUserCompany':entity[i].endUserCompany,
                 });
     }
     console.log("licPagerUpdate 收到的数据 ",data);
@@ -421,10 +397,11 @@ class FilterTable extends React.Component {
         data:tableData
     });
   }
+
   //表格组件加载时加载数据
   componentDidMount() {
-    fetch(licenseCount,this.licCountUpdate,{type:0,});
-    fetch(licensePager,this.licPagerUpdate,{type:0,pageNO:1,size:10});//默认    
+    this.setState({loading:true});    
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10}); //默认获取第一页，每页10行    
   }
 
   //表头筛选部分
@@ -437,79 +414,78 @@ class FilterTable extends React.Component {
   onCdkChange = (e) => {
     this.setState({ searchCdkText: e.target.value });
   }
+  
   //绑定搜索cdk button
   onCdkSearch = (e) => {
     const { searchCdkText } = this.state;
-    const reg = new RegExp(searchCdkText, 'gi');
+    if(!searchCdkText){
+      this.setState({
+        filterCdkVisible: false,
+        cdkFiltered: !!searchCdkText,
+      });
+     return;
+    }
     //筛选后重新加载数据
-    let params = `cdkey=${searchCdkText}`;
-    this.fetch(params);
-
+    this.setState({loading:true});    
+    //根据搜索cdk筛选查询cdk
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10,key:searchCdkText});
+    //清空筛选框
     this.setState({
       filterCdkVisible: false,
       cdkFiltered: !!searchCdkText,
-      data: this.state.data.map((record) => {
-        const match = record.cdkey.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          cdkey: (
-            <span>
-              {record.cdkey.split(reg).map((text, i) => (
-                i > 0 ? [<span className="highlight">{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
     });
   }
    //绑定搜索 Customer input
   onCustomerChange = (e) => {
     this.setState({ searchCustomerText: e.target.value });
   }
-  //绑定搜索Customer button
+  //绑定搜索最终用户公司名称 Customer button
   onCustomerSearch = (e) => {
     const { searchCustomerText } = this.state;
-    const reg = new RegExp(searchCustomerText, 'gi');
+    if(!searchCustomerText){
+      this.setState({
+        filterCustomerVisible: false,
+        customerFiltered: !!searchCustomerText,
+        });
+     return;
+    }
     //筛选后重新加载数据
-    //let params = `cdkey=${searchCustomerText}`;
-    //this.fetch(params);
-
+    this.setState({loading:true});    
+    //根据搜索 公司名称 筛选查询cdk
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10,endUserCompany:searchCustomerText});
+    //清空筛选框
     this.setState({
       filterCustomerVisible: false,
       customerFiltered: !!searchCustomerText,
-      data: this.state.data.map((record) => {
-        const match = record.customer.match(reg);
-        if (!match) {
-          return null;
-        }
-        return {
-          ...record,
-          customer: (
-            <span>
-              {record.customer.split(reg).map((text, i) => (
-                i > 0 ? [<span className="highlight">{match[0]}</span>, text] : text
-              ))}
-            </span>
-          ),
-        };
-      }).filter(record => !!record),
     });
   }
+  //根据产品筛选
+  onProductSearch=(value, record)=>{
+    console.log('onProductSearch',value, record);
+  }
+  //根据激活状态筛选
+  onActivationSearch=(value, record)=>{
+    console.log('onActivationSearch',value, record);
+  }
   //单击行 显示 模态框 修改授权，加站，延期
-  onRowClick=(record)=>{
-      if(this.state.doubleClick){
-        console.log('111',record);  
-        this.refsModCdkModal.showModal(record);
-      }
-    this.setState({
-      doubleClick:true
-    });
-    //模拟双击键
-    setTimeout(()=>{this.setState({doubleClick:false})},300);
+  // onRowClick=(record)=>{
+  //     if(this.state.doubleClick){
+  //       console.log('111',record);  
+  //       this.refsModCdkModal.showModal(record);
+  //     }
+  //   this.setState({
+  //     doubleClick:true
+  //   });
+  //   //模拟双击键
+  //   setTimeout(()=>{this.setState({doubleClick:false})},300);
+  // }
+  //编辑某行
+  onRowEdit=(text, record, index)=>{
+    console.log("text------",text,"record------",record, "index----- ", index)
+      return(<a onClick={this.onRowEditClick(text)}>编辑</a>);
+  }
+  onRowEditClick=(text)=>{
+    console.log("====text===",text);
   }
   
 
@@ -560,37 +536,49 @@ class FilterTable extends React.Component {
       dataIndex: 'productName',
       key: 'productName',
       filters: [{ //表头的筛选菜单
+        text: '云桌面',
+        value: '云桌面',
+      }, {
         text: 'CTBS高级版',
         value: 'CTBS高级版',
       }, {
         text: 'CTBS企业版',
         value: 'CTBS企业版',
-      },{
-        text: '云桌面',
-        value: '云桌面',
       }],
-      onFilter: (value, record) => record.product.indexOf(value) === 0,
+      onFilter: (value, record) => record.productName.indexOf(value) === 0,
     }, {
       title: '试用到期',
       dataIndex: 'expirationDate',
       key: 'expirationDate',
+      sorter: (a, b) => a.expirationDate - b.expirationDate,
     }, {
       title: '站点数',
       dataIndex: 'userNumber',
       key: 'userNumber',
+      sorter: (a, b) => a.userNumber - b.userNumber,
     }, {
       title: '激活状态',
       dataIndex: 'activation',
       key: 'activation',
       filters: [{ //表头的筛选菜单
         text: '已激活',
-        value: 1,
+        value: '已激活',
       }, {
         text: '未激活',
-        value: 0,
+        value: '未激活',
       }],
-      onFilter: (value, record) => record.active.indexOf(value) === 0,
-    }];
+      onFilter: (value, record) => record.activation.indexOf(value) === 0,
+    },{ title: '操作', 
+        dataIndex: '', 
+        key: 'x', 
+        //编辑行
+        render: (text, record, index) => {
+          console.log("text------",text,"record------",record, "index----- ", index)
+          return (
+            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log(record);}} >编辑</Button>) : null
+          );
+      }, 
+      }];
 
     
     return (
@@ -598,10 +586,10 @@ class FilterTable extends React.Component {
         <div>
           <Table 
               columns={columns} 
-              onRowClick={this.onRowClick} // 点击行 修改cdk模态框
+              //onRowClick={this.onRowClick} // 点击行 修改cdk模态框
               dataSource={this.state.data} 
               size="small"
-              rowKey={record => record.registered}  //表格行 key 的取值，可以是字符串或一个函数
+              rowKey={record => record.key}  //表格行 key 的取值，可以是字符串或一个函数
               pagination={this.state.pagination}   //分页器，配置项参考 pagination，设为 false 时不展示和进行分页
               loading={this.state.loading}   //页面是否加载中
               onChange={this.handleTableChange} /> 
@@ -618,7 +606,7 @@ class LicTemp extends React.Component{
     handleAskTempLic(){
       this.refsAskTemlLicModal.showModal();
     }
-
+    
     render(){
         return(
             <div>

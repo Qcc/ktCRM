@@ -11,6 +11,7 @@ import Customer from './pages/customer';
 import Register from './pages/register';
 import Login from './pages/login';
 import FindPwd from './pages/findPwd';
+import Demo from './demo';
 import './index.css';
 
 ReactDOM.render(
@@ -26,6 +27,7 @@ ReactDOM.render(
         <Route path="/login" component={Login}/>
         <Route path="/register" component={Register}/>
         <Route path="/findPwd" component={FindPwd}/>
+        <Route path="/demo" component={Demo}/>
       </div>
     </HashRouter>,
   document.getElementById('root')

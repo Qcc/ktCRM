@@ -9,7 +9,7 @@ class Register extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active='register'/>
+            <KtHeaderComp theme='light' active='register'/>
             <h1>这是注册页面</h1>
             <KtFooterComp/>
             </div>

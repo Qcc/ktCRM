@@ -50,6 +50,8 @@ export const partenrAccount = rootUrl + "/protected/employee/read.api";
 export const licenseCount = rootUrl + "/protected/license/getLicenseCount.api";
 //按照指定的分页参数查询数据
 export const licensePager = rootUrl + "/protected/license/getLicensePager.api";
+//按照指定分页查总数 与 数据
+export const licenseCountPager = rootUrl + "/protected/license/getLicenseCountPager.api";
 //申请临时试用license
 export const generateTrail = rootUrl+"/protected/license/generateTrail.api";
 //方法正式授权license

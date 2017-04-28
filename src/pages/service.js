@@ -9,7 +9,7 @@ class Service extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active='service'/>
+            <KtHeaderComp theme='light' active='service'/>
             <h1>这是服务页面</h1>
             <KtFooterComp/>
             </div>

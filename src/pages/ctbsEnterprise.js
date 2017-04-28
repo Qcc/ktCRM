@@ -9,7 +9,7 @@ class CTBSEnterprise extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active="ctbsEnterprise"/>
+            <KtHeaderComp theme='light' active="ctbsEnterprise"/>
             <h1>这是CTBS企业版详情页</h1>
             <KtFooterComp/>
             </div>

@@ -9,7 +9,7 @@ class CTBSAdv extends React.Component{
     render(){
         return(
             <div>
-            <KtHeaderComp active="ctbsAdv"/>
+            <KtHeaderComp theme='light' active="ctbsAdv"/>
             <h1>这是CTBS高级版详情页</h1>
             <KtFooterComp/>
             </div>

@@ -19,7 +19,7 @@ class Home extends React.Component{
         };
         return(
            <div>
-              <KtHeaderComp active='home'/>
+              <KtHeaderComp active='home' theme='light'/>
                     <Carousel {...settings}>
                         <div className='home-banner'><img alt='轮播广告' src={require('../static/banner01.jpg')}/></div>
                         <div className='home-banner'><img alt='轮播广告' src={require('../static/banner02.jpg')}/></div>
