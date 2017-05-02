@@ -1,8 +1,8 @@
 import React from 'react';
-import {Button,Table, Input,InputNumber ,DatePicker, 
+import {Button,Table, Input,InputNumber,Date, 
         Icon,Modal,Form,Radio,Tooltip} from 'antd';
 import '../../styles/lictemp.css';
-import {licenseCountPager,generateTrail,fetch} from '../../utils/connect';
+import {licenseCountPager,generateTrail,getSumDelayDays,addUserNumberAndDelay,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 //修改授权码模态框
@@ -53,7 +53,14 @@ class AskTemlLicModal extends React.Component{
       endUserEmail:'',//终端用户邮箱
       endUserName:'',//终端用户联系人
       endUserPhone:'',//终端用户电话
-      endUserAddress:'',//终端用户地址
+      userCompanyValid:'error',
+      userCompanyHelp:'请输入用户公司名称',
+      emailValid:'error',
+      emailHelp:'请输入用户邮箱',
+      nameValid:'error',
+      nameHelp:'请输入用户姓名',
+      phoneValid:'error',
+      phoneHelp:'请输入用户手机号码',
     };
   }
   
@@ -62,7 +69,6 @@ class AskTemlLicModal extends React.Component{
   endUserEmail=(e)=>{this.setState({endUserEmail:e.target.value});}
   endUserName=(e)=>{this.setState({endUserName:e.target.value});}
   endUserPhone=(e)=>{this.setState({endUserPhone:e.target.value});}
-  endUserAddress=(e)=>{this.setState({endUserAddress:e.target.value});}
 
   //显示申请临时授权模态框界面
   showModal = () => {
@@ -89,25 +95,52 @@ class AskTemlLicModal extends React.Component{
       endUserEmail:'',//终端用户邮箱
       endUserName:'',//终端用户联系人
       endUserPhone:'',//终端用户电话
-      endUserAddress:'',//终端用户地址
      });  
   }
   //确认申请临时授权
   handleOk = () => {
     let {productId,
-      endUserCompany,
-      endUserEmail,
-      endUserName,
-      endUserPhone}=this.state;
+         endUserCompany,
+         endUserEmail,
+         endUserName,
+         endUserPhone,
+         userCompanyValid,
+         emailValid,
+         nameValid,
+         phoneValid,
+        }=this.state;
     this.setState({ askTempLoading: true });
-    let params = {productId:productId,
-      endUserCompany:endUserCompany,
-      endUserEmail:endUserEmail,
-      endUserName:endUserName,
-      endUserPhone:endUserPhone,}
-      //请求数据
-    fetch(generateTrail,this.trailUpdate,params);
-    
+    //用户信息必填
+    if(endUserCompany !== ''){
+      this.setState({
+        userCompanyValid:'success',
+      });
+    }
+    if(endUserEmail !== ''){
+      this.setState({
+        emailValid:'success',
+      });
+    }
+    if(endUserName !== ''){
+      this.setState({
+        nameValid:'success',
+      });
+    }
+    if(endUserPhone !== ''){
+      this.setState({
+        phoneValid:'success',
+      });
+    }
+    if(userCompanyValid ==='success' || emailValid ==='success' || nameValid ==='success' || phoneValid ==='success'){    
+      let params = {productId:productId,
+          endUserCompany:endUserCompany,
+          endUserEmail:endUserEmail,
+          endUserName:endUserName,
+          endUserPhone:endUserPhone,}
+          //请求数据
+          fetch(generateTrail,this.trailUpdate,params);
+      }
+
   }
   //取消申请临时授权
   handleCancel = () => {
@@ -169,6 +202,10 @@ class AskTemlLicModal extends React.Component{
                    <FormItem
                      {...formItemLayout}
                      label="公司名称"
+                     required
+                     hasFeedback
+                     validateStatus={this.state.userCompanyValid}
+                     help={this.state.userCompanyHelp}
                    >
                      <Input onChange={this.endUserCompany} value={this.state.endUserCompany} placeholder="客户公司名称" id="error" />
                    </FormItem>
@@ -177,6 +214,9 @@ class AskTemlLicModal extends React.Component{
                      {...formItemLayout}
                      label="邮箱"
                      hasFeedback
+                     required
+                     validateStatus={this.state.emailValid}
+                     help={this.state.emailHelp}
                    >
                      <Input onChange={this.endUserEmail} value={this.state.endUserEmail} placeholder="客户邮箱" id="warning" />
                    </FormItem>
@@ -185,6 +225,9 @@ class AskTemlLicModal extends React.Component{
                      {...formItemLayout}
                      label="联系人"
                      hasFeedback
+                     required
+                     validateStatus={this.state.nameValid}
+                     help={this.state.nameHelp}
                    >
                      <Input onChange={this.endUserName} value={this.state.endUserName} placeholder="客户联系人" id="error" />
                    </FormItem>
@@ -193,16 +236,11 @@ class AskTemlLicModal extends React.Component{
                      {...formItemLayout}
                      label="手机"
                      hasFeedback
+                     required
+                     validateStatus={this.state.phoneValid}
+                     help={this.state.phoneHelp}
                    >
                      <Input onChange={this.endUserPhone} value={this.state.endUserPhone} placeholder="客户手机" id="error" />
-                   </FormItem>
-
-                    <FormItem
-                     {...formItemLayout}
-                     label="地址"
-                     hasFeedback
-                   >
-                     <Input onChange={this.endUserAddress} value={this.state.endUserAddress} placeholder="客户地址" id="error" />
                    </FormItem>
              </Form>
              <div className='temp-lic-tips'>
@@ -216,31 +254,130 @@ class AskTemlLicModal extends React.Component{
 
 
 class ModCdkModal extends React.Component{
-
-  state={
-    modCdkloading: false, //修改授权模态框加载状态
-    modCdkvisible: false, //修改授权模态框是否可见
-    cdk:{}, //每行CDK数据
+    constructor(){
+    super();
+    this.state={
+      modCdkloading: false, //修改授权模态框加载状态
+      modCdkvisible: false, //修改授权模态框是否可见
+      defaultExpirationDate:0, //默认延期0天
+      newExpirationDate:'',//新的有效期
+      remainingDate:15,//剩余可延期的天数
+      allowDay:15, //默认允许延期的最大天数 
+      //每行CDK数据
+      activation:"",
+      endUserCompany:"",
+      expirationDate:"",
+      key:"",
+      productName:"",
+      userNumber:'',
+      oldNumber:'',//保存原始站点数
+    }
   }
+
+  //props参数校验
+    static propTypes = {
+        modTableCdk: React.PropTypes.func.isRequired,
+    };
+  //获取延期天数回调
+  extensionDay=(data)=>{
+    if(data.errorCode ===0){
+      this.setState({
+        remainingDate:data.entity[0],//剩余可延期的天数
+        allowDay:data.entity[1], //默认允许延期的最大天数
+        modCdkloading: false, //修改授权模态框加载状态 
+      });
+    }
+  }
+  
 
   //显示修改cdkey模态框界面
   showModal = (record) => {
+    fetch(getSumDelayDays,this.extensionDay,{"licKey":record.key});//请求还可延期的天数    
     this.setState({
+      modCdkloading:true, 
+      activation:record.activation,//是否激活
+      endUserCompany:record.endUserCompany, //客户公司名称
+      expirationDate:record.expirationDate,//到期时间
+      newExpirationDate:record.expirationDate,//延期后 新的有效期
+      key:record.key,//授权码
+      productName:record.productName, //产品版本
+      userNumber:record.userNumber,//激活数
+      oldNumber:record.userNumber,//保存原始站点数     
       modCdkvisible: true,
-      cdk:record,
     });
-    console.log("模态框",record);
+    console.log("模态框--完",this.state.cdk);
+  }
+  //授权站点数与延期
+  onUserNumberChange=(value)=>{this.setState({ userNumber: value });}
+  onExpirationDateChange=(value)=>{ 
+    this.setState({ 
+      defaultExpirationDate: value,
+      newExpirationDate:this.handleDate(value,this.state.expirationDate),
+    });
+}  
+
+  //加点 延期，回调处理
+  numberAndDelayUpdate=(data)=>{
+    this.setState({modCdkloading:false});    
+    if(data.status !== 200){
+      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+      return;    
+    };
+    if(data.errorCode === 0){
+      Modal.success({title: '成功！',content:'操作完成！'});
+      //通过父组件 表格传入的 props 函数更新表格
+      this.props.modTableCdk(this.state.key,this.state.newExpirationDate,this.state.userNumber);
+      }else{
+        Modal.error({title: '错误！',content:'服务器错误,'+data.message});      
+      }
+    this.handleCancel();      
   }
   //修改完成后，当点击保存按钮时，更新cdkey
   handleOk = () => {
     this.setState({ modCdkloading: true });
-    setTimeout(() => {
-      this.setState({ modCdkloading: false, modCdkvisible: false });
-    }, 3000);
+    let params = {};
+    if(this.state.defaultExpirationDate){
+      params.licKey=this.state.key;
+      params.delayDays=this.state.defaultExpirationDate;
+    }
+    if(this.state.userNumber !== this.state.oldNumber){
+      params.licKey=this.state.key;      
+      params.addUserNumber = this.state.userNumber;
+    }
+    if(params.licKey){
+      fetch(addUserNumberAndDelay,this.numberAndDelayUpdate,params);
+    }else{
+      this.handleCancel();
+    }
   }
   //取消修改
   handleCancel = () => {
-    this.setState({ modCdkvisible: false });
+    this.setState({ 
+      modCdkvisible: false,
+      modCdkvisible: false, //修改授权模态框是否可见
+      defaultExpirationDate:0, //默认延期0天
+      newExpirationDate:'',//新的有效期
+      remainingDate:15,//剩余可延期的天数
+      allowDay:15, //默认允许延期的最大天数 
+      //每行CDK数据
+      activation:"",
+      endUserCompany:"",
+      expirationDate:"",
+      key:"",
+      productName:"",
+      userNumber:'',
+      oldNumber:'',
+       });
+  }
+  //日期处理,根据输入的天数，返回延期后的日期，从当前日期开始算
+  handleDate=(day,expirationDate)=>{
+    let oldTime = new Date(expirationDate).getTime();
+    let nowTime = new Date().getTime();  
+    //如果授权已过期，根据当前时间延期
+    let oldMillisecond = oldTime<nowTime?nowTime:oldTime;
+    let dayMillisecond = day*(1000*60*60*24);
+    let newDate = new Date(oldMillisecond+dayMillisecond);
+    return newDate.getFullYear()+'-'+(newDate.getMonth()+1)+'-'+newDate.getDate();
   }
 
   render(){
@@ -265,7 +402,7 @@ class ModCdkModal extends React.Component{
                    validateStatus="success"
                    required
                  >
-                   <Input id="user" disabled defaultValue={this.state.cdk.customer} />
+                   <Input id="user" disabled value={this.state.endUserCompany} />
                  </FormItem>
             
                  <FormItem
@@ -275,7 +412,7 @@ class ModCdkModal extends React.Component{
                     validateStatus="success"
                     required
                   >
-                    <Input id="product" disabled defaultValue={this.state.cdk.product} />
+                    <Input id="product" disabled value={this.state.productName} />
                   </FormItem>
                   
                   <FormItem
@@ -285,7 +422,7 @@ class ModCdkModal extends React.Component{
                    validateStatus="success"
                    required
                  >
-                   <Input id="cdk" disabled defaultValue={this.state.cdk.cdkey}/>
+                   <Input id="cdk" disabled value={this.state.key}/>
                  </FormItem>
 
                   <FormItem
@@ -295,30 +432,36 @@ class ModCdkModal extends React.Component{
                     validateStatus="warning"
                     required
                   >
-                    <InputNumber min={1} max={100} id="license" defaultValue={this.state.cdk.license} />
+                    <InputNumber min={1} max={100} id="license" 
+                      onChange={this.onUserNumberChange}
+                      value={this.state.userNumber} /><span>可授权站点范围1~100</span>
                   </FormItem>
 
                   <FormItem
                     {...formItemLayout}
-                    label="过期时间"
+                    label="延期天数"
                     hasFeedback
                     validateStatus="warning"
                     required
                   >
-                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                    <InputNumber min={0} max={this.state.remainingDate} id="license" 
+                        value={this.state.defaultExpirationDate}
+                        onChange={this.onExpirationDateChange} 
+                        /><span>{this.state.defaultExpirationDate?`有效期至${this.state.newExpirationDate}`
+                              :`还可延期${this.state.remainingDate}天`}</span>
                   </FormItem>
                   <FormItem
                    {...formItemLayout}
                    label="激活状态"
                    required
                  >
-                     <Radio.Group defaultValue={this.state.cdk.active}>
+                     <Radio.Group disabled value={this.state.activation}>
                       <Radio value="已激活">已激活</Radio>
                       <Radio value="未激活">未激活</Radio>
                     </Radio.Group>
                  </FormItem>
                </Form>
-               <div className='temp-lic-tips'><p><span>提示 ：</span>临时授权站点数最多授权100个站点最少1个，每个授权只能延期2次，每次最多7天！</p></div>
+               <div className='temp-lic-tips'><p><span>提示 ：</span>临时授权站点数最少1个最多可授权100个站点，每个授权最多只能延期15天(累计)。</p></div>
             </Modal>
     );
   }
@@ -326,27 +469,30 @@ class ModCdkModal extends React.Component{
 
 //数据表
 class FilterTable extends React.Component {
-  state = {
-    filterCdkVisible:false, //cdk筛选input 是否可见
-    filterCustomerVisible: false,  //客户名称筛选input是否可见
-    searchCdkText: '', //筛选CDK input value
-    searchCustomerText: '',  //筛选客户名称 input value  
-    cdkFiltered: false, //cdk筛选cdk input value
-    customerFiltered: false, //客户名称筛选 input value
-    loading: false, //表格加载状态
-    doubleClick:false,//模拟表格双击事件
-    pagination: { //分页器
-                  showSizeChanger:true, //是否可设置每页显示多少行
-                  defaultCurrent:1, //默认页码
-                 // defaultPageSize:5,//默认每页显示多少行
-                  pageSize:10, //页显示多少行
-                  total:0, //总行数
-                  showQuickJumper:true, //可快速跳转到指定页码
-                  pageSizeOptions:['10','50','200','500','1000']//每页可显示多少行
-                }, //分页器
-    data: [] //表数据
-    
-  };
+  constructor(){
+    super();
+    this.state = {
+      filterCdkVisible:false, //cdk筛选input 是否可见
+      filterCustomerVisible: false,  //客户名称筛选input是否可见
+      searchCdkText: '', //筛选CDK input value
+      searchCustomerText: '',  //筛选客户名称 input value  
+      cdkFiltered: false, //cdk筛选cdk input value
+      customerFiltered: false, //客户名称筛选 input value
+      loading: false, //表格加载状态
+      doubleClick:false,//模拟表格双击事件
+      pagination: { //分页器
+                    showSizeChanger:true, //是否可设置每页显示多少行
+                    defaultCurrent:1, //默认页码
+                  // defaultPageSize:5,//默认每页显示多少行
+                    pageSize:10, //页显示多少行
+                    total:0, //总行数
+                    showQuickJumper:true, //可快速跳转到指定页码
+                    pageSizeOptions:['10','50','200','500','1000']//每页可显示多少行
+                  }, //分页器
+      data: [] //表数据
+      
+    };
+  }
     //表格变化后重新加载数据 筛选 排序 翻页 除自定义筛选外
   handleTableChange = (pagination, filters, sorter) => {
     const pager = { ...this.state.pagination };
@@ -396,6 +542,21 @@ class FilterTable extends React.Component {
     this.setState({
         data:tableData
     });
+  }
+  //加点 延期后 更新表格内容通过props 修改回调 modTableCdk
+  modTableCdk=(key,date,userNumber)=>{
+    console.log('修改了 key',key,"延期",date,"加点",userNumber);
+    let tableData = this.state.data;
+    for(let i=0 ;i<tableData.length;i++){
+      if(tableData[i].key === key){
+          tableData[i].userNumber=userNumber,
+          tableData[i].expirationDate=date,
+          this.setState({
+              data:tableData,
+          });
+        return;
+      }
+    }
   }
 
   //表格组件加载时加载数据
@@ -467,18 +628,7 @@ class FilterTable extends React.Component {
   onActivationSearch=(value, record)=>{
     console.log('onActivationSearch',value, record);
   }
-  //单击行 显示 模态框 修改授权，加站，延期
-  // onRowClick=(record)=>{
-  //     if(this.state.doubleClick){
-  //       console.log('111',record);  
-  //       this.refsModCdkModal.showModal(record);
-  //     }
-  //   this.setState({
-  //     doubleClick:true
-  //   });
-  //   //模拟双击键
-  //   setTimeout(()=>{this.setState({doubleClick:false})},300);
-  // }
+ 
   //编辑某行
   onRowEdit=(text, record, index)=>{
     console.log("text------",text,"record------",record, "index----- ", index)
@@ -573,9 +723,8 @@ class FilterTable extends React.Component {
         key: 'x', 
         //编辑行
         render: (text, record, index) => {
-          console.log("text------",text,"record------",record, "index----- ", index)
           return (
-            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log(record);}} >编辑</Button>) : null
+            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log("表格行",record);}} >编辑</Button>) : null
           );
       }, 
       }];
@@ -593,7 +742,7 @@ class FilterTable extends React.Component {
               pagination={this.state.pagination}   //分页器，配置项参考 pagination，设为 false 时不展示和进行分页
               loading={this.state.loading}   //页面是否加载中
               onChange={this.handleTableChange} /> 
-            <ModCdkModal ref={(node)=>this.refsModCdkModal=node}/>   
+            <ModCdkModal modTableCdk={this.modTableCdk} ref={(node)=>this.refsModCdkModal=node}/>   
         </div>
     );
   }

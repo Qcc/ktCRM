@@ -54,6 +54,12 @@ export const licensePager = rootUrl + "/protected/license/getLicensePager.api";
 export const licenseCountPager = rootUrl + "/protected/license/getLicenseCountPager.api";
 //申请临时试用license
 export const generateTrail = rootUrl+"/protected/license/generateTrail.api";
+//临时license 延期 加点
+export const addUserNumberAndDelay = rootUrl+"/protected/license/addUserNumberAndDelay.api";
+//临时license 延期 加点
+export const getSumDelayDays = rootUrl+"/protected/license/getSumDelayDays.api";
+
+
 //方法正式授权license
 export const generateFormal = rootUrl + "/protected/license/generateFormal.api";
 
@@ -67,3 +73,12 @@ export const licTemp = 'http://192.168.200.100:3000/licTemp';
 export const Inven = 'http://192.168.200.100:3000/inven';
 
 export const Inven1='http://192.168.200.104:8080/dinghuo/protected/license/queryLicense.api';
+
+// addUserNumberAndDelay(String licKey, int addUserNumber, int delayDays, 
+//     		String endUserCompany, String endUserName, String endUserPhone, String endUserEmail)
+
+// 查询累计延期天数接口：getSumDelayDays，entity字段返回如下：
+// {
+//     sumDelayDays: 3,
+//     maxDelayDays: 15
+// }
