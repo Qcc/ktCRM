@@ -124,7 +124,7 @@ class UserModPwdModal extends React.Component{
         let params ={oldPassword:oldPwdInputValue,
                     newPassword:newRepPwdInputValue,
                     validateCode:validCodeInputValue}
-        fetch(modifyPassword,this.update,'post',params);
+        fetch(modifyPassword,this.update,params);
         this.setState({
             loading:true,
             oldPwdInputValue: '', //旧密码

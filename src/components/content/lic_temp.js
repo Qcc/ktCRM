@@ -53,14 +53,14 @@ class AskTemlLicModal extends React.Component{
       endUserEmail:'',//终端用户邮箱
       endUserName:'',//终端用户联系人
       endUserPhone:'',//终端用户电话
-      userCompanyValid:'error',
-      userCompanyHelp:'请输入用户公司名称',
-      emailValid:'error',
-      emailHelp:'请输入用户邮箱',
-      nameValid:'error',
-      nameHelp:'请输入用户姓名',
-      phoneValid:'error',
-      phoneHelp:'请输入用户手机号码',
+      userCompanyValid:'',
+      userCompanyHelp:'',
+      emailValid:'',
+      emailHelp:'',
+      nameValid:'',
+      nameHelp:'',
+      phoneValid:'',
+      phoneHelp:'',
     };
   }
   
@@ -115,23 +115,47 @@ class AskTemlLicModal extends React.Component{
       this.setState({
         userCompanyValid:'success',
       });
+    }else{
+      this.setState({
+        userCompanyValid:'error',
+        userCompanyHelp:'请输入用户公司名称',
+        askTempLoading: false,
+      });
     }
     if(endUserEmail !== ''){
       this.setState({
         emailValid:'success',
       });
-    }
+    }else{
+      this.setState({
+        emailValid:'error',
+        emailHelp:'请输入用户邮箱',
+        askTempLoading: false,
+      });
+      }
     if(endUserName !== ''){
       this.setState({
         nameValid:'success',
       });
-    }
+    }else{
+      this.setState({
+        nameValid:'error',
+        nameHelp:'请输入用户姓名',
+        askTempLoading: false,
+      });
+      }
     if(endUserPhone !== ''){
       this.setState({
         phoneValid:'success',
       });
+    }else{
+      this.setState({
+        phoneValid:'error',
+        phoneHelp:'请输入用户手机号码',
+        askTempLoading: false,
+      });
     }
-    if(userCompanyValid ==='success' || emailValid ==='success' || nameValid ==='success' || phoneValid ==='success'){    
+    if(userCompanyValid ==='success' && emailValid ==='success' && nameValid ==='success' && phoneValid ==='success'){    
       let params = {productId:productId,
           endUserCompany:endUserCompany,
           endUserEmail:endUserEmail,
