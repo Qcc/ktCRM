@@ -75,7 +75,7 @@ class SalesTable extends React.Component {
                     pageSize:10, //每页条数
                     total:0, //总数据 条数
                     showSizeChanger:true,
-                    pageSizeOptions:['1','2','150','500'],
+                    pageSizeOptions:['10','50','150','500'],
                     showQuickJumper:true,
                   }, //分页器
       loading: false, //表格加载状态
@@ -110,12 +110,12 @@ class SalesTable extends React.Component {
     let tempPagination = this.state.pagination;
     for (let i=0;i<list.length;i++) {
       tempDate.push({ 
-                      "key":list[i].key,
+                      "key":i,
+                      "cdKey":list[i].key,
                       "endUserCompany":list[i].endUserCompany,
                       "userNumber":list[i].userNumber,
-                      "sum":list[i].sum,
-                      "state":list[i].state=4?'已完成':'待处理',
-                      "date":list[i].createDatetime,
+                      "type":list[i].type=1?'新客户':'老客户加点',
+                      "actionDatetime":list[i].actionDatetime,
                   });
     }
     tempPagination.total = data.entity.count;
@@ -139,8 +139,8 @@ class SalesTable extends React.Component {
     //筛选input后缀，清除数据
     const columns = [{
       title: '授权码',
-      dataIndex: 'key',
-      key: 'key',
+      dataIndex: 'cdKey',
+      key: 'cdKey',
       sorter: (a, b) => a.amount > b.amount,
     }, {
       title: '客户',
@@ -153,13 +153,13 @@ class SalesTable extends React.Component {
       key: 'userNumber',
       sorter: (a, b) => a.sum > b.sum,
     }, {
-      title: '订单状态',
-      dataIndex: 'state',
-      key: 'state',
+      title: '类型',
+      dataIndex: 'type',
+      key: 'type',
     }, {
       title: '日期',
-      dataIndex: 'date',
-      key: 'date',
+      dataIndex: 'actionDatetime',
+      key: 'actionDatetime',
       sorter: (a, b) => a.date > b.date,
     }];
 

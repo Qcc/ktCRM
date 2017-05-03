@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button,Table, Input,InputNumber,Date, 
+import {Button,Table, Input,InputNumber, 
         Icon,Modal,Form,Radio,Tooltip} from 'antd';
 import '../../styles/licgenu.css';
 import {licenseCountPager,generateFormal,addUserNumberAndDelay,fetch} from '../../utils/connect';
@@ -444,7 +444,7 @@ class ModCdkModal extends React.Component{
                     hasFeedback
                     validateStatus="warning"
                     required
-                  >
+                  > 
                     <InputNumber min={+this.state.oldNumber} id="license" 
                       onChange={this.onUserNumberChange}
                       value={this.state.userNumber} /><span>增加站点后扣取库存</span>
