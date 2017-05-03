@@ -54,25 +54,20 @@ export const licensePager = rootUrl + "/protected/license/getLicensePager.api";
 export const licenseCountPager = rootUrl + "/protected/license/getLicenseCountPager.api";
 //申请临时试用license
 export const generateTrail = rootUrl+"/protected/license/generateTrail.api";
+//生成正式license
+export const generateFormal = rootUrl+"/protected/license/generateFormal.api";
 //临时license 延期 加点
 export const addUserNumberAndDelay = rootUrl+"/protected/license/addUserNumberAndDelay.api";
-//临时license 延期 加点
+//临时license 获取还可延期的天数
 export const getSumDelayDays = rootUrl+"/protected/license/getSumDelayDays.api";
+//查询库存
+export const query = rootUrl+"/protected/stock/query.api";
+// 出货总数 明细
+export const getLicActPager = rootUrl+"/protected/license/getLicActPager.api" 
+// 采购总数 明细
+export const getOrderPagerByPartner = rootUrl+"/protected/order/getOrderCountAndPager.api"
 
 
-//方法正式授权license
-export const generateFormal = rootUrl + "/protected/license/generateFormal.api";
-
-
-
-
-
-//获取临时授权完整列表 GET
-export const licTemp = 'http://192.168.200.100:3000/licTemp';
-//查询产品库存
-export const Inven = 'http://192.168.200.100:3000/inven';
-
-export const Inven1='http://192.168.200.104:8080/dinghuo/protected/license/queryLicense.api';
 
 // addUserNumberAndDelay(String licKey, int addUserNumber, int delayDays, 
 //     		String endUserCompany, String endUserName, String endUserPhone, String endUserEmail)
@@ -82,3 +77,37 @@ export const Inven1='http://192.168.200.104:8080/dinghuo/protected/license/query
 //     sumDelayDays: 3,
 //     maxDelayDays: 15
 // }
+/*
+ {
+                "id": 18,
+                "type": 2,
+                "key": "0115-902B-C327-92B1",
+                "isTrail": 1,
+                "userNumber": 3,
+                "delayDays": null,
+                "expirationDate": "2017-05-13",
+                "user": {
+                    "id": 6,
+                    "user": null,
+                    "password": null,
+                    "disable": null,
+                    "employee": null,
+                    "roles": null,
+                    "salesUser": false,
+                    "partner": false
+                },
+                "product": {
+                    "productId": 3,
+                    "productName": "云桌面",
+                    "productVersion": "4.0",
+                    "productPrice": null
+                },
+                "actionDatetime": "2017-04-28 11:50:29",
+                "resultCode": null,
+                "resultMsg": null,
+                "endUserCompany": "云桌面测试",
+                "endUserName": "发给",
+                "endUserPhone": "1234564654",
+                "endUserEmail": "798@456.com"
+            },
+*/

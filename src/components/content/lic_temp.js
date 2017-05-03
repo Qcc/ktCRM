@@ -44,7 +44,7 @@ class CopyIcon extends React.Component{
 //申请临时授权界面
 class AskTemlLicModal extends React.Component{
   constructor(){
-    super()
+    super();
     this.state={
       askTempLoading: false, //修改申请授权模态框加载状态
       askTempVisible: false, //修改申请模态框是否可见
@@ -112,6 +112,7 @@ class AskTemlLicModal extends React.Component{
     this.setState({ askTempLoading: true });
     //用户信息必填
     if(endUserCompany !== ''){
+      userCompanyValid='success';
       this.setState({
         userCompanyValid:'success',
       });
@@ -123,6 +124,7 @@ class AskTemlLicModal extends React.Component{
       });
     }
     if(endUserEmail !== ''){
+         emailValid='success';
       this.setState({
         emailValid:'success',
       });
@@ -134,6 +136,7 @@ class AskTemlLicModal extends React.Component{
       });
       }
     if(endUserName !== ''){
+         nameValid='success';
       this.setState({
         nameValid:'success',
       });
@@ -145,6 +148,7 @@ class AskTemlLicModal extends React.Component{
       });
       }
     if(endUserPhone !== ''){
+         phoneValid='success';
       this.setState({
         phoneValid:'success',
       });
@@ -377,7 +381,6 @@ class ModCdkModal extends React.Component{
   //取消修改
   handleCancel = () => {
     this.setState({ 
-      modCdkvisible: false,
       modCdkvisible: false, //修改授权模态框是否可见
       defaultExpirationDate:0, //默认延期0天
       newExpirationDate:'',//新的有效期
@@ -408,7 +411,7 @@ class ModCdkModal extends React.Component{
     return(
       <Modal
               visible={this.state.modCdkvisible}
-              title="修改CDKEY"
+              title="授权加点与延期"
               onOk={this.handleOk}
               onCancel={this.handleCancel}
               footer={[
@@ -573,8 +576,8 @@ class FilterTable extends React.Component {
     let tableData = this.state.data;
     for(let i=0 ;i<tableData.length;i++){
       if(tableData[i].key === key){
-          tableData[i].userNumber=userNumber,
-          tableData[i].expirationDate=date,
+          tableData[i].userNumber = userNumber;
+          tableData[i].expirationDate = date;
           this.setState({
               data:tableData,
           });

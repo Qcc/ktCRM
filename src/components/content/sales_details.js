@@ -1,6 +1,6 @@
 import React from 'react';
 import { Table,Tabs} from 'antd';
-import {query,getOrderPagerByPartner,fetch} from '../../utils/connect'; //库存数量Url
+import {query,getLicActPager,fetch} from '../../utils/connect'; //库存数量Url
 import '../../styles/inven.css';
 const TabPane = Tabs.TabPane;
 
@@ -65,7 +65,7 @@ class Inventory extends React.Component{
 }
 
 //数据表
-class InvenTable extends React.Component {
+class SalesTable extends React.Component {
   constructor(){
     super();
     this.state = {
@@ -75,7 +75,7 @@ class InvenTable extends React.Component {
                     pageSize:10, //每页条数
                     total:0, //总数据 条数
                     showSizeChanger:true,
-                    pageSizeOptions:['10','50','150','500'],
+                    pageSizeOptions:['1','2','150','500'],
                     showQuickJumper:true,
                   }, //分页器
       loading: false, //表格加载状态
@@ -96,7 +96,7 @@ class InvenTable extends React.Component {
                   "size":pagination.pageSize,
                   "product.productId":this.props.productId,
                 };
-   fetch(getOrderPagerByPartner,this.tableUpdata,params);
+   fetch(getLicActPager,this.tableUpdata,params);
     
   }
   //表格数据填充回调
@@ -110,9 +110,9 @@ class InvenTable extends React.Component {
     let tempPagination = this.state.pagination;
     for (let i=0;i<list.length;i++) {
       tempDate.push({ 
-                      "key":i,
-                      "amount":list[i].amount,
-                      "price":list[i].price,
+                      "key":list[i].key,
+                      "endUserCompany":list[i].endUserCompany,
+                      "userNumber":list[i].userNumber,
                       "sum":list[i].sum,
                       "state":list[i].state=4?'已完成':'待处理',
                       "date":list[i].createDatetime,
@@ -132,25 +132,25 @@ class InvenTable extends React.Component {
     this.setState({
       loading:true,
     });
-    fetch(getOrderPagerByPartner,this.tableUpdata,{pageNO:1,size:10,"product.productId":this.props.productId});
+    fetch(getLicActPager,this.tableUpdata,{pageNO:1,size:10,"product.productId":this.props.productId});
   }
 
   render() {
     //筛选input后缀，清除数据
     const columns = [{
-      title: '采购数量',
-      dataIndex: 'amount',
-      key: 'amount',
+      title: '授权码',
+      dataIndex: 'key',
+      key: 'key',
       sorter: (a, b) => a.amount > b.amount,
     }, {
-      title: '采购单价',
-      dataIndex: 'price',
-      key: 'price',
+      title: '客户',
+      dataIndex: 'endUserCompany',
+      key: 'priendUserCompanyce',
       sorter: (a, b) => a.price > b.price,
     }, {
-      title: '采购总价',
-      dataIndex: 'sum',
-      key: 'sum',
+      title: '用户数',
+      dataIndex: 'userNumber',
+      key: 'userNumber',
       sorter: (a, b) => a.sum > b.sum,
     }, {
       title: '订单状态',
@@ -182,19 +182,20 @@ class InvenTable extends React.Component {
 
 
 
-class InvenDetails extends React.Component{
+class SalesDetails extends React.Component{
 
     render(){
       return(
         <div className='warp'>
           <Tabs tabBarExtraContent={<Inventory/>} type="card">
-            <TabPane tab="沟通云桌面" key="1"><InvenTable productId={3}/></TabPane>
-            <TabPane tab="CTBS高级版" key="2"><InvenTable productId={1}/></TabPane>
-            <TabPane tab="CTBS企业版" key="3"><InvenTable productId={2}/></TabPane>
+            <TabPane tab="沟通云桌面" key="1"><SalesTable productId={3}/></TabPane>
+            <TabPane tab="CTBS高级版" key="2"><SalesTable productId={1}/></TabPane>
+            <TabPane tab="CTBS企业版" key="3"><SalesTable productId={2}/></TabPane>
           </Tabs>
         </div>
         );
     }
 }
 
-export default InvenDetails;
+ 
+export default SalesDetails;

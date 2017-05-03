@@ -8,6 +8,7 @@ import LicQuery from '../components/content/lic_query';
 import LicTemp from '../components/content/lic_temp';
 import LicGenu from '../components/content/lic_genu';
 import InvenDetails from '../components/content/inven_details';
+import SalesDetails from '../components/content/sales_details';
 import '../styles/main.css';
 
 const { SubMenu } = Menu;
@@ -18,7 +19,9 @@ const childComponent = {
       licQuery:LicQuery,
       licTemp:LicTemp,
       licGenu:LicGenu,
-      invenDetails:InvenDetails};
+      invenDetails:InvenDetails,
+      salesDetails:SalesDetails,
+    };
 class Main extends React.Component{
 
     //加载页面时修改title
@@ -26,7 +29,7 @@ class Main extends React.Component{
         document.title='订货系统-深圳市沟通科技有限公司';
     }
     state = {
-      currentComponent:childComponent.licTemp,
+      currentComponent:childComponent.invenDetails,
     }
     //点击切换菜单
     handleClick = (e) => {
@@ -48,8 +51,8 @@ class Main extends React.Component{
                 <Sider width={200} style={{ background: '#fff' }}>
                   <Menu
                     mode="inline"
-                    defaultSelectedKeys={['licTemp']} //默认选中的菜单Item
-                    defaultOpenKeys={['lic']}  //默认打开的菜单组
+                    defaultSelectedKeys={['invenDetails']} //默认选中的菜单Item
+                    defaultOpenKeys={['inven']}  //默认打开的菜单组
                     onClick={this.handleClick} //菜单点击handle
                     style={{ height: '100%' }}
                   > 
@@ -63,7 +66,8 @@ class Main extends React.Component{
                       <Menu.Item key="licGenu">正式授权</Menu.Item>
                     </SubMenu>
                     <SubMenu key="inven" title={<span><Icon type="home" />库存管理</span>}>
-                      <Menu.Item key="invenDetails">库存明细</Menu.Item>
+                      <Menu.Item key="invenDetails">采购库存</Menu.Item>
+                      <Menu.Item key="salesDetails">销售明细</Menu.Item>                      
                     </SubMenu>
                   </Menu>
                 </Sider>

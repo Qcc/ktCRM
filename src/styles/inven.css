@@ -1,6 +1,7 @@
 .inven-count{
-    font-size: 15px;
-}
-.inven-count span{
+    font-size: 13px;
     margin-right:10px;
+}
+.warp{
+    min-height: 100%;
 }
