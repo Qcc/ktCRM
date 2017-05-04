@@ -10,7 +10,7 @@ class Register extends React.Component{
         return(
             <div>
             <KtHeaderComp theme='light' active='register'/>
-            <h1>这是注册页面</h1>
+            <div style={{height:550,textAlign:"center",padding: 100,fontSize:16}}>功能暂未开放...</div>
             <KtFooterComp/>
             </div>
         );

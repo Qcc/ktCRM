@@ -1,20 +1,39 @@
 .customer-body{
     width: 1000px;
-    margin: 0 auto;
-    background-color: rebeccapurple;
-    height: 650px;
-    position: relative
+    margin: 10px auto;
+    height: 1350px;
+    position: relative;
+    font-size: 15px;
 }
 .customer-nav{
-    width: 200px;
+    width: 250px;
+    padding: 20px 10px;
     position: absolute;
     left:0;
-    background-color: gray;
-    
+    font-size: 16px;
+    background-color: #EFEFEF;
+}
+.customer-nav li{
+    color: #3397FB;
+    line-height: 45px;
+    text-align: center;
+    border-bottom: 1px solid #aaa;    
 }
 .customer-content{
-    width: 800px;
+    padding: 20px 10px;    
+    width: 750px;
     position: absolute;
     right: 0;
-    background-color: teal;    
+}
+.customer-content h4{
+    color: #3397FB;
+    line-height: 45px;
+    border-bottom: 2px solid #ccc;
+}
+.customer-content p{
+    text-indent: 30px;
+}
+.customer-content ol{
+    margin-left:40px;
+    list-style-type:decimal; 
 }

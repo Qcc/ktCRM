@@ -657,13 +657,13 @@ class FilterTable extends React.Component {
   }
  
   //编辑某行
-  onRowEdit=(text, record, index)=>{
-    console.log("text------",text,"record------",record, "index----- ", index)
-      return(<a onClick={this.onRowEditClick(text)}>编辑</a>);
-  }
-  onRowEditClick=(text)=>{
-    console.log("====text===",text);
-  }
+  // onRowEdit=(text, record, index)=>{
+  //   console.log("text------",text,"record------",record, "index----- ", index)
+  //     return(<a onClick={this.onRowEditClick(text)}>加点与延期</a>);
+  // }
+  // onRowEditClick=(text)=>{
+  //   console.log("====text===",text);
+  // }
   
 
   render() {
@@ -751,7 +751,7 @@ class FilterTable extends React.Component {
         //编辑行
         render: (text, record, index) => {
           return (
-            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log("表格行",record);}} >编辑</Button>) : null
+            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log("表格行",record);}} >加点与延期</Button>) : null
           );
       }, 
       }];

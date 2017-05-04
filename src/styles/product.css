@@ -1,1 +1,24 @@
-@import '~antd/dist/antd.css';
+.product-body{
+    width: 1000px;
+    margin: 10px auto;
+    height: 1350px;
+    position: relative;
+    font-size: 15px;
+}
+.product-intrduction{
+    position: absolute;
+    left: 0;
+    width: 500px;
+    height: 400px;
+    text-align: center;
+    vertical-align: middle;
+}
+.product-img{
+    position: absolute;
+    right: 0;
+    width: 500px;
+     height: 400px;
+     display: table-cell;
+     vertical-align: middle;
+     text-align: center;
+}

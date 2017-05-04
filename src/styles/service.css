@@ -1,1 +1,59 @@
-@import '~antd/dist/antd.css';
+.service-body{
+    width: 1000px;
+    margin: 10px auto;
+    height: 1580px;
+    position: relative;
+    font-size: 15px;
+}
+.service-nav{
+    width: 250px;
+    padding: 20px 10px;
+    position: absolute;
+    left:0;
+    font-size: 16px;
+    background-color: #EFEFEF;
+}
+.service-nav li{
+    color: #3397FB;
+    line-height: 45px;
+    text-align: center;
+    border-bottom: 1px solid #aaa;    
+}
+.service-content{
+    padding: 20px 10px;    
+    width: 750px;
+    position: absolute;
+    right: 0;
+}
+.service-nav li{
+    color: #3397FB;
+    line-height: 45px;
+    text-align: center;
+    border-bottom: 1px solid #aaa;    
+}
+.service-content{
+    padding: 20px 10px;    
+    width: 750px;
+    position: absolute;
+    right: 0;
+}
+.service-content h4{
+    color: #3397FB;
+    line-height: 45px;
+    border-bottom: 2px solid #ccc;
+}
+.service-content p{
+    text-indent: 30px;
+}
+.service-content ol{
+    margin-left:40px;
+    list-style-type:decimal; 
+}
+
+.imgwarp{
+    width: 750px;
+     height: 300px;
+     display: table-cell;
+     vertical-align: middle;
+     text-align: center;
+}

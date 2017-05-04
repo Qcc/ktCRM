@@ -10,7 +10,7 @@ class Customer extends React.Component{
         return(
             <div>
             <KtHeaderComp theme='light' active="customer"/>
-            <h1>这是找回密码</h1>
+            <div style={{height:550,textAlign:"center",padding: 100,fontSize:16}}>功能暂未开放...</div>
             <KtFooterComp/>
             </div>
         );
