@@ -35,6 +35,10 @@ export function fetch(url,callback,params = {},method='POST'){
     });
   };
 
+//登录
+export const login = rootUrl+"/public/user/login.api"
+//退出
+export const logout = rootUrl+"/public/user/logout.api"
 //查询单个license
 //参数 licKey=XXXX-XXXX-XXXX-XXXX
 export const querylicense = rootUrl+'/protected/license/queryLicense.api'

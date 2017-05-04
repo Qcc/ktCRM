@@ -10,6 +10,7 @@
 .header{ 
     font-size: 16px;
  }
-.logonin,.register{
+.logonin{
     float: right;
+    margin-right: 20px;
 } 

@@ -1,1 +1,20 @@
-@import '~antd/dist/antd.css';
+.customer-body{
+    width: 1000px;
+    margin: 0 auto;
+    background-color: rebeccapurple;
+    height: 650px;
+    position: relative
+}
+.customer-nav{
+    width: 200px;
+    position: absolute;
+    left:0;
+    background-color: gray;
+    
+}
+.customer-content{
+    width: 800px;
+    position: absolute;
+    right: 0;
+    background-color: teal;    
+}

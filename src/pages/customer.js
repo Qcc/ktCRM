@@ -1,6 +1,7 @@
 import React from 'react';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
+import "../styles/customer.css";
 
 class Customer extends React.Component{
     componentDidMount() {
@@ -10,7 +11,25 @@ class Customer extends React.Component{
         return(
             <div>
             <KtHeaderComp theme='light' active="customer"/>
-            <h1>这是客户须知</h1>
+            <div className="customer-body">
+                <div className="customer-nav">
+                    <ul>
+                        <li>关于商品11</li>
+                        <li>关于发货</li>
+                        <li>关于配送及验收</li>
+                        <li>关于退换货</li>
+                        <li>关于发票</li>
+                        <li>关于售后服务</li>                                                           
+                    </ul>
+                </div>
+                <div className="customer-content">
+                fgfhfg <br/>
+                fgfhfg <br/>
+                fgfhfg <br/>
+                fgfhfg <br/>
+                
+                </div>
+            </div>
             <KtFooterComp/>
             </div>
         );

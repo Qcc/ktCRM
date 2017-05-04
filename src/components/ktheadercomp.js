@@ -12,6 +12,7 @@ class KtHeaderComp extends React.Component{
     static propTypes ={
         active:React.PropTypes.string,
         theme:React.PropTypes.string,
+        login:React.PropTypes.node,
     }
 
     componentWillMount(){
@@ -39,8 +40,9 @@ class KtHeaderComp extends React.Component{
                  </SubMenu>
                 <Menu.Item key="service"><Link to="/service">原厂服务</Link></Menu.Item>
                 <Menu.Item key="customer"><Link to="/customer">购买须知</Link></Menu.Item>
-                <Menu.Item key="login" style={{float:'right'}}><Link to="/login">登录</Link></Menu.Item>
-                <Menu.Item key="register" style={{float:'right'}}><Link to="/register">注册</Link></Menu.Item>
+                {this.props.login?this.props.login:
+                      <Menu.Item className='logonin' key="login" style={{float:'right'}}>
+                          <Link to="/login">登录</Link></Menu.Item>}
             </Menu>
         );
     }

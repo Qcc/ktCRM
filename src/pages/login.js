@@ -4,16 +4,22 @@ import { Form} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import LoginForm from '../components/LoginForm';
 import KtFooterComp from '../components/ktfootercomp';
+import {validateCodeImgURL,login} from '../utils/connect';
 import '../styles/login.css'; 
 import '../styles/common.css'; 
 
 
-    let urlRoot = 'http://192.168.200.104:8080/dinghuo/';
-    let actionURL = urlRoot + "public/user/login.api";
-    // let loginSuccessURL = urlRoot + "protected/main.html";
+    
+    let actionURL = login;
     let loginSuccessURL = "http://192.168.200.176:3000/#/main";   
-    let validateCodeURL = urlRoot + "public/user/validateCodeImg.api";
+    let validateCodeURL = validateCodeImgURL;
                                     
+    // let urlRoot = 'http://192.168.200.104:8080/dinghuo/';
+    // let actionURL = urlRoot + "public/user/login.api";
+    // // let loginSuccessURL = urlRoot + "protected/main.html";
+    // let loginSuccessURL = "http://192.168.200.176:3000/#/main";   
+    // let validateCodeURL = urlRoot + "public/user/validateCodeImg.api";
+
     const WrappedNormalLoginForm = Form.create()(LoginForm);
 
 class Login extends React.Component{

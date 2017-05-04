@@ -1,20 +1,20 @@
 import React from 'react';
-import { Layout, Menu, Breadcrumb, Icon } from 'antd';
+import { Layout, Menu,Modal,Button,Breadcrumb, Icon } from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
-import UserInfo from '../components/content/user_info';
 import UserMod from '../components/content/user_mod';
 import LicQuery from '../components/content/lic_query';
 import LicTemp from '../components/content/lic_temp';
 import LicGenu from '../components/content/lic_genu';
 import InvenDetails from '../components/content/inven_details';
 import SalesDetails from '../components/content/sales_details';
+import {logout,fetch} from '../utils/connect';
 import '../styles/main.css';
 
 const { SubMenu } = Menu;
+const confirm = Modal.confirm;
 const { Header, Content, Sider } = Layout;
 const childComponent = {
-      userInfo:UserInfo,
       userMod:UserMod,
       licQuery:LicQuery,
       licTemp:LicTemp,
@@ -29,7 +29,7 @@ class Main extends React.Component{
         document.title='订货系统-深圳市沟通科技有限公司';
     }
     state = {
-      currentComponent:childComponent.invenDetails,
+      currentComponent:childComponent.userMod,
     }
     //点击切换菜单
     handleClick = (e) => {
@@ -40,24 +40,47 @@ class Main extends React.Component{
       //window.location.hash = e.key;//将页面切换到点击菜单页面
     }
    
+    //确认是否退出
+    showConfirm=()=>{
+      confirm({
+        title: '请确认',
+        content: '要退出当前登录的账户吗？',
+      onOk() {
+        fetch(logout,(data)=>{
+          if(data.status === 200 && data.errorCode === 0){
+              window.location.hash ='/';       
+            }
+        });
+      },
+      onCancel() {
+        console.log('Cancel');
+      },
+    }); 
+    }
+    //登录状态
+    loginStatus=()=>{
+      return(
+            <div style={{float:"right"}} ><Button ghost onClick={this.showConfirm}>退出</Button></div>
+             );
+    }
+   
     render(){
         return(
            <div> 
               <Layout>
                 <Header> 
-                  <KtHeaderComp active='main'/>
+                  <KtHeaderComp active='main' login={this.loginStatus()}/>
                 </Header>
               <Layout>
                 <Sider width={200} style={{ background: '#fff' }}>
                   <Menu
                     mode="inline"
-                    defaultSelectedKeys={['invenDetails']} //默认选中的菜单Item
-                    defaultOpenKeys={['inven']}  //默认打开的菜单组
+                    defaultSelectedKeys={['userMod']} //默认选中的菜单Item
+                    defaultOpenKeys={['user']}  //默认打开的菜单组
                     onClick={this.handleClick} //菜单点击handle
                     style={{ height: '100%' }}
                   > 
                     <SubMenu key="user" title={<span><Icon type="user" />客户中心</span>}>
-                      <Menu.Item key="userInfo">我的信息</Menu.Item>
                       <Menu.Item key="userMod">修改资料</Menu.Item>
                     </SubMenu>
                     <SubMenu key="lic" title={<span><Icon type="idcard" />授权管理</span>}>
@@ -84,27 +107,9 @@ class Main extends React.Component{
               </Layout>
             </Layout>
     <KtFooterComp/>
-  </div>
+  </div> 
         );
     }
 }
   
 export default Main;
-
-/*
-import React from 'react';
-import MenuComp from '../components/menuComp';
-import KtFooterComp from '../components/ktfootercomp';
-class Main extends React.Component{
-
-    render(){
-        return(
-            <div>
-                <MenuComp/>
-                <KtFooterComp/>
-            </div>
-        );
-    }
-}
-
-export default Main;*/

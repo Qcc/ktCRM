@@ -114,7 +114,7 @@ class SalesTable extends React.Component {
                       "cdKey":list[i].key,
                       "endUserCompany":list[i].endUserCompany,
                       "userNumber":list[i].userNumber,
-                      "type":list[i].type=1?'新客户':'老客户加点',
+                      "type":list[i].type===1?'新客户':'老客户加点',
                       "actionDatetime":list[i].actionDatetime,
                   });
     }
