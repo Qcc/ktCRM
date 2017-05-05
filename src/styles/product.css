@@ -2,23 +2,94 @@
     width: 1000px;
     margin: 10px auto;
     height: 1350px;
-    position: relative;
     font-size: 15px;
 }
+.intrduction{
+    position: relative;
+    height: 400px;
+}
 .product-intrduction{
+    text-indent: 30px;
+    padding: 30px 20px 20px;
     position: absolute;
     left: 0;
     width: 500px;
     height: 400px;
-    text-align: center;
     vertical-align: middle;
 }
-.product-img{
+.product-wrap{
+    padding: 20px;
     position: absolute;
     right: 0;
     width: 500px;
-     height: 400px;
-     display: table-cell;
-     vertical-align: middle;
-     text-align: center;
+    height: 400px;
+}
+.product-wrap>img{
+    position: absolute;
+    left: 50%;
+    top:50%;
+    margin-left: -50%;
+    margin-top: -35%;
+    box-shadow: 0 2px 17px 0 rgba(0, 0, 0, 0.3);
+    
+}
+.features{
+    position: relative;
+    height: 200px;
+    margin-top: 20px;
+}
+.features-first{
+    padding: 20px;
+    position: absolute;
+    left: 0;
+    width: 320px;
+}
+.features-first>h3{
+    padding-left: 40px;
+    line-height: 40px;
+    background: url('../static/apply.png') no-repeat left center;
+}
+.features-second{
+    padding: 20px;
+    position: absolute;
+    left: 340px;
+    width: 320px;
+}
+.features-second>h3{
+    padding-left: 40px;
+    line-height: 40px;
+    background: url('../static/plate.png') no-repeat left center;
+}
+.features-third{
+    padding: 20px;    
+    position: absolute;
+    left: 680px;
+    width: 320px;
+}
+.features-third>h3{
+    padding-left: 40px;
+    line-height: 40px;
+    background: url('../static/efficiency.png') no-repeat left center;
+}
+.topology-img>h2{
+    border-bottom: 1px solid #ccc;
+    line-height: 40px;
+    color: #3397FB;
+}
+.topology-img>img{
+    padding: 20px;
+    clear: both; 
+    display: block; 
+    margin:auto; 
+}
+.customer-img>h2{
+    border-bottom: 1px solid #ccc;    
+    line-height: 40px;
+    color: #3397FB;
+}
+.customer-img>img{
+    padding: 20px;
+    clear: both; 
+    display: block; 
+    margin:auto;
 }

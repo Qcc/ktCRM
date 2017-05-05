@@ -3,7 +3,7 @@
     width: 100%;
     overflow: hidden; 
 }
- .home-banner img{
+ .home-banner>img{
      height: 400px;
      position: relative;
      left: 50%;

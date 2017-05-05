@@ -30,9 +30,18 @@ class Home extends React.Component{
                   <div className='home-content-title'>
                     <h2>应用虚拟化</h2>
                   </div>
-                  <ProductCard cardAlt='CTBS高级版' cardImg={require('../static/adv.jpg')} cardTitle='CTBS高级版' cardSubTitle='通用型应用虚拟化软件'/>
-                  <ProductCard cardAlt='CTBS企业版' cardImg={require('../static/enterprise.jpg')} cardTitle='CTBS企业版' cardSubTitle='跨平台的应用虚拟化软件'/>
-                  <ProductCard cardAlt='沟通云桌面' cardImg={require('../static/cloudapp.jpg')} cardTitle='沟通科技云桌面' cardSubTitle='极简型应用虚拟化软件'/>
+                  <a href="#ctbsAdv">
+                  <ProductCard cardAlt='CTBS高级版' cardImg={require('../static/adv.jpg')} 
+                               cardTitle='CTBS高级版' cardSubTitle='通用型应用虚拟化软件'/>
+                  </a>    
+                  <a href="#ctbsEnterprise">
+                  <ProductCard cardAlt='CTBS企业版' cardImg={require('../static/enterprise.jpg')}
+                                 cardTitle='CTBS企业版' cardSubTitle='跨平台的应用虚拟化软件'/>
+                  </a>
+                  <a href="#cloudApp">
+                  <ProductCard cardAlt='沟通云桌面' cardImg={require('../static/cloudapp.jpg')}
+                             cardTitle='沟通科技云桌面' cardSubTitle='极简型应用虚拟化软件'/>
+                  </a>
               </Content>
               <KtFooterComp/>
             </div>

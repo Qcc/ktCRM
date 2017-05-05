@@ -20,24 +20,19 @@ class Inventory extends React.Component{
       }
       if(data.errorCode === 0){
         for (var key in data.entity) {
-          switch(data.entity[key].id){
-            case 1:
+          if(data.entity[key].id === 1){
               this.setState({
                 ctbsAdvCount:data.entity[key].points,              
               });
-              break;
-            case 2:
+          }else if(data.entity[key].id === 2){
               this.setState({
                 ctbsEnterpriseCount:data.entity[key].points,              
               });
-              break;
-            case 3:
+          }else if(data.entity[key].id === 3){
               this.setState({
               cloudAppCount:data.entity[key].points,              
               });
-              break;
-            default:null;
-          }
+          };
         }
       }
   }
