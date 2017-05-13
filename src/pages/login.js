@@ -4,13 +4,13 @@ import { Form} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import LoginForm from '../components/LoginForm';
 import KtFooterComp from '../components/ktfootercomp';
-import {validateCodeImgURL,login} from '../utils/connect';
+import {validateCodeImgURL,login,koutonLogin} from '../utils/connect';
 import '../styles/login.css'; 
 import '../styles/common.css'; 
 
 
     
-    let actionURL = login;
+    let actionURL = koutonLogin;
     let loginSuccessURL = "http://192.168.200.176:3000/#/main";   
     let validateCodeURL = validateCodeImgURL;
                                     

@@ -37,6 +37,8 @@ export function fetch(url,callback,params = {},method='POST'){
 
 //登录
 export const login = rootUrl+"/public/user/login.api"
+//kouton登录
+export const koutonLogin = rootUrl+"/public/user/koutonlogin.api"
 //退出
 export const logout = rootUrl+"/public/user/logout.api"
 //查询单个license
