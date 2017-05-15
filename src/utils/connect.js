@@ -35,21 +35,21 @@ export function fetch(url,callback,params = {},method='POST'){
     });
   };
 
-//登录
-export const login = rootUrl+"/public/user/login.api"
+//伙伴登录
+export const login = rootUrl+"/public/user/login.api";
 //kouton登录
-export const koutonLogin = rootUrl+"/public/user/koutonlogin.api"
+//export const login = rootUrl+"/public/user/koutonlogin.api";
 //退出
-export const logout = rootUrl+"/public/user/logout.api"
+export const logout = rootUrl+"/public/user/logout.api";
 //查询单个license
 //参数 licKey=XXXX-XXXX-XXXX-XXXX
-export const querylicense = rootUrl+'/protected/license/queryLicense.api'
+export const querylicense = rootUrl+'/protected/license/queryLicense.api';
 //修改密码
 export const modifyPassword = rootUrl+'/public/user/modifyPassword.api';
 //验证码 api 
 export const validateCodeImgURL = rootUrl + "/public/user/validateCodeImg.api";
 //读取伙伴信息
-export const partenrInfo = rootUrl + "/protected/corp/read.api";
+export const AccountInfo = rootUrl + "/protected/partner/read.api";
 //读取伙伴帐号信息
 export const partenrAccount = rootUrl + "/protected/employee/read.api";
 //查询已发放的license 总数 正式版  试用版
@@ -71,7 +71,7 @@ export const query = rootUrl+"/protected/stock/query.api";
 // 出货总数 明细
 export const getLicActPager = rootUrl+"/protected/license/getLicActPager.api" 
 // 采购总数 明细
-export const getOrderPagerByPartner = rootUrl+"/protected/order/getOrderCountAndPager.api"
+export const getOrderPagerByPartner = rootUrl+"/protected/order/getPager.api"
 
 
 

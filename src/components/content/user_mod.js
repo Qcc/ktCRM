@@ -3,33 +3,28 @@ import {Button,Icon } from 'antd';
 import UserModPwdModal from './user_mod_pwd_modal';
 import UserModMailModal from './user_mod_mail_modal';
 import UserModSecurityModal from './user_mod_security_modal';
-import {partenrInfo,partenrAccount,fetch} from '../../utils/connect';
+import {AccountInfo,fetch} from '../../utils/connect';
 import '../../styles/usermod.css';
 
 class UserMod extends React.Component{
     state = {
-        account:'金牌代理',
         company:'', //代理商公司名称
         phone:'',
         contact:'',
+        level:'',
         avatar:require('../../static/avatar.jpg'), //用户头像
-        level:'金牌代理',
     }
 
     infoUpdate=(data)=>{
         this.setState({
-            company:data.entity.name,
-            phone:data.entity.phone,
-        });
-    }
-    accountUpdate=(data)=>{
-        this.setState({
-            contact:data.entity.name,
+            contact:data.entity && data.entity.name,
+            level: data.entity && data.entity.level,
+            company:data.entity && data.entity.company,
+            phone:data.entity&& data.entity.phone,
         });
     }
     componentDidMount() {
-        fetch(partenrInfo,this.infoUpdate);
-        fetch(partenrAccount,this.accountUpdate);        
+        fetch(AccountInfo,this.infoUpdate);        
     }
     //弹出修改密码模态框,以下三行调用的是同ref回调传入父组件中的 子组件的引用
     modPwdClick=(e)=>{this.userModPwdModal.modPwdOpen();}
@@ -49,7 +44,7 @@ class UserMod extends React.Component{
                         <img src={this.state.avatar} alt='头像'/>
                     </div>
                     <div  className='usermod-info'>
-                        <div><span className='usermod-info-title'>伙伴等级 : </span><span>{this.state.account}</span><br/></div>
+                        <div><span className='usermod-info-title'>伙伴等级 : </span><span>{this.state.level}</span><br/></div>
                         <div><span className='usermod-info-title'>公司名称 : </span><span>{this.state.company}</span><br/></div>
                         <div><span className='usermod-info-title'>手机 : </span><span>{this.state.phone}</span><br/></div>
                         <div><span className='usermod-info-title'>联系人 : </span><span>{this.state.contact}</span><br/></div>                                                

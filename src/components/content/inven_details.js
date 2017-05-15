@@ -94,6 +94,22 @@ class InvenTable extends React.Component {
    fetch(getOrderPagerByPartner,this.tableUpdata,params);
     
   }
+  orderStates=(status)=>{
+    let s ='';
+    switch(status){
+      case -2: s='审核失败';
+        break;
+      case 1: s='待审核';
+        break;
+      case 2: s='待付款';
+        break;
+      case 3: s='待发货';
+        break;
+      case 4: s='已完成';
+        break;
+    }
+    return s;
+  }
   //表格数据填充回调
   tableUpdata=(data)=>{
     console.log(data);
@@ -106,10 +122,9 @@ class InvenTable extends React.Component {
     for (let i=0;i<list.length;i++) {
       tempDate.push({ 
                       "key":i,
-                      "amount":list[i].amount,
-                      "price":list[i].price,
-                      "sum":list[i].sum,
-                      "state":list[i].state=4?'已完成':'待处理',
+                      "points":list[i].points,
+                      "money":list[i].money,
+                      "state":this.orderStates(list[i].state),
                       "date":list[i].createDatetime,
                   });
     }
@@ -127,26 +142,21 @@ class InvenTable extends React.Component {
     this.setState({
       loading:true,
     });
-    fetch(getOrderPagerByPartner,this.tableUpdata,{pageNO:1,size:10,"product.productId":this.props.productId});
+    fetch(getOrderPagerByPartner,this.tableUpdata,{pageNO:1,size:10,"product.productId":this.props.productId,ifGetCount:1});
   }
 
   render() {
     //筛选input后缀，清除数据
     const columns = [{
       title: '采购数量',
-      dataIndex: 'amount',
-      key: 'amount',
+      dataIndex: 'points',
+      key: 'points',
       sorter: (a, b) => a.amount > b.amount,
-    }, {
-      title: '采购单价',
-      dataIndex: 'price',
-      key: 'price',
-      sorter: (a, b) => a.price > b.price,
-    }, {
+    },{
       title: '采购总价',
-      dataIndex: 'sum',
-      key: 'sum',
-      sorter: (a, b) => a.sum > b.sum,
+      dataIndex: 'money',
+      key: 'money',
+      sorter: (a, b) => a.money > b.money,
     }, {
       title: '订单状态',
       dataIndex: 'state',

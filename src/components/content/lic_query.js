@@ -113,7 +113,7 @@ class LicQuery extends React.Component{
                   key: '3',
                   project: '产品',
                   status: 'Ok',     //status: 'Ok',
-                  checked: data.entity.product.productName,//checked: '云桌面V2.1',
+                  checked: data.entity.product && data.entity.product.productName,//checked: '云桌面V2.1',
                 },{
                   key: '4',
                   project: '授权',
