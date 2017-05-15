@@ -36,9 +36,9 @@ export function fetch(url,callback,params = {},method='POST'){
   };
 
 //伙伴登录
-export const login = rootUrl+"/public/user/login.api";
+//export const login = rootUrl+"/public/user/login.api";
 //kouton登录
-//export const login = rootUrl+"/public/user/koutonlogin.api";
+export const login = rootUrl+"/public/user/koutonlogin.api";
 //退出
 export const logout = rootUrl+"/public/user/logout.api";
 //查询单个license

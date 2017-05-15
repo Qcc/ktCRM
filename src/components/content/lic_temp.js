@@ -23,7 +23,7 @@ class CopyIcon extends React.Component{
         product:this.props.cdk.product?this.props.cdk.product.productName:'null',
         cdk:this.props.cdk.key,
         number:this.props.cdk.userNumber,
-        trail:this.props.cdk.isTrail == 1?'临时授权':'正版授权',
+        trail:this.props.cdk.isTrail === 1?'临时授权':'正版授权',
         date:this.props.cdk.expirationDate,
         copy:'复制',
         icon:'copy',
@@ -50,9 +50,9 @@ class CopyIcon extends React.Component{
 
     render(){
       return(
-           <div  onMouseOut ={this.handleMoseOut} style={{textAlign:"center",position:"relative"}}>
+           <div  onMouseOut={this.handleMoseOut} style={{textAlign:"center",position:"relative"}}>
               <Input type="textarea" cols="20" rows="5" id="cdkey" 
-                  value= {
+                  value={
                  "适用产品:"+this.state.product +
                   "\n授权码:"+this.state.cdk +
                   "\n用户数:"+this.state.number +

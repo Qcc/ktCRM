@@ -107,6 +107,7 @@ class InvenTable extends React.Component {
         break;
       case 4: s='已完成';
         break;
+      default : s=null;
     }
     return s;
   }

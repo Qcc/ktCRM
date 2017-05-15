@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu,Modal,Button,Breadcrumb, Icon } from 'antd';
+import { Layout, Menu,Modal,Breadcrumb ,Icon} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
 import UserMod from '../components/content/user_mod';
@@ -59,9 +59,7 @@ class Main extends React.Component{
     }
     //登录状态
     loginStatus=()=>{
-      return(
-            <div style={{float:"right"}} ><Button ghost onClick={this.showConfirm}>退出</Button></div>
-             );
+      return '已登录';
     }
    
     render(){

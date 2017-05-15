@@ -8,9 +8,15 @@
     float: left;
 }
 .header{ 
+    width: 100%;
     font-size: 16px;
+    background-color: red;
  }
 .logonin{
     float: right;
     margin-right: 20px;
 } 
+#logined{
+    position: relative;
+    right: 0;
+}
