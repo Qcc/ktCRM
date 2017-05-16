@@ -8,7 +8,7 @@
 
 # production
 /build
-
+/build_parnter
 # misc
 .DS_Store
 .env

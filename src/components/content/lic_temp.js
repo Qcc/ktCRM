@@ -781,7 +781,7 @@ class FilterTable extends React.Component {
         //编辑行
         render: (text, record, index) => {
           return (
-            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log("表格行",record);}} >加点与延期</Button>) : null
+            <a  onClick={()=>this.refsModCdkModal.showModal(record)} >加点与延期</a>
           );
       }, 
       }];

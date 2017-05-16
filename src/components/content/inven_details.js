@@ -15,25 +15,28 @@ class Inventory extends React.Component{
     }
     //库存 请求回调
   upState=(data)=>{
-      if(data.status !== 200){
-         return;
-      }
-      if(data.errorCode === 0){
-        for (var key in data.entity) {
-          if(data.entity[key].id === 1){
+    console.log("库存 ==========",data);
+      if(data){
+        let stock = data.entity.part1;
+        for (var key in stock) {
+          if(stock[key].id === 1){
               this.setState({
-                ctbsAdvCount:data.entity[key].points,              
+                ctbsAdvCount:stock[key].points,              
               });
-          }else if(data.entity[key].id === 2){
+          }else if(stock[key].id === 2){
               this.setState({
-                ctbsEnterpriseCount:data.entity[key].points,              
+                ctbsEnterpriseCount:stock[key].points,              
               });
-          }else if(data.entity[key].id === 3){
+          }else if(stock[key].id === 3){
               this.setState({
-              cloudAppCount:data.entity[key].points,              
+              cloudAppCount:stock[key].points,              
               });
           };
         }
+        //现金库存
+        this.setState({
+              cashAccount:data.entity.part2.balance,              
+              });
       }
   }
     //表格组件加载时加载数据

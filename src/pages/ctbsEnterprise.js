@@ -42,12 +42,12 @@ class CTBSEnterprise extends React.Component{
                     </div>    
                 </div>
                 <div className="topology-img">
-                    <h2>云桌面部署图</h2>
-                    <img alt="云桌面部署图" src={require("../static/topology-cloudapp.png")} />
+                    <h2>CTB高级版部署图</h2>
+                    <img alt="云桌面部署图" src={"dinghuo"+require("../static/topology-cloudapp.png")} />
                 </div>     
                 <div className="customer-img">
                     <h2>我们的客户</h2>
-                    <img alt="云桌面部署图" src={require("../static/customer-img.png")} />
+                    <img alt="云桌面部署图" src={"dinghuo"+require("../static/customer-img.png")} />
                 </div>            
             </div>
             <KtFooterComp/>

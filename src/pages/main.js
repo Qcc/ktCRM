@@ -45,29 +45,26 @@ class Main extends React.Component{
       confirm({
         title: '请确认',
         content: '要退出当前登录的账户吗？',
-      onOk() {
-        fetch(logout,(data)=>{
-          if(data.status === 200 && data.errorCode === 0){
+        onOk() {
+          fetch(logout,(data)=>{
+            if(data){
               window.location.hash ='/';       
             }
-        });
-      },
-      onCancel() {
-        console.log('Cancel');
-      },
-    }); 
+          });
+        },
+        onCancel() {
+          console.log('Cancel');
+        },
+      }); 
     }
-    //登录状态
-    loginStatus=()=>{
-      return '已登录';
-    }
+     
    
     render(){
         return(
            <div> 
               <Layout>
                 <Header> 
-                  <KtHeaderComp active='main' login={this.loginStatus()}/>
+                  <KtHeaderComp active='main'  loginOut={this.showConfirm}/>
                 </Header>
               <Layout>
                 <Sider width={200} style={{ background: '#fff' }}>

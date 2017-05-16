@@ -24,7 +24,7 @@ class CTBSAdv extends React.Component{
                                 互联网传输与用户端并没有真实的业务数据。这样做到了操作与数据隔离，成为了企业的安全堡垒。</p>                      
                     </div>
                     <div className="product-wrap">
-                          <img  alt="沟通科技云桌面" src={require("../static/ctbsAdv_1.jpg")} />
+                          <img  alt="沟通科技云桌面" src={"dinghuo"+require("../static/ctbsAdv_1.jpg")} />
                     </div>
                 </div>
                 <div className="features">
@@ -42,12 +42,12 @@ class CTBSAdv extends React.Component{
                     </div>    
                 </div>
                 <div className="topology-img">
-                    <h2>云桌面部署图</h2>
-                    <img alt="云桌面部署图" src={require("../static/topology-cloudapp.png")} />
+                    <h2>CTBS高级版部署图</h2>
+                    <img alt="云桌面部署图" src={"dinghuo"+require("../static/topology-cloudapp.png")} />
                 </div>     
                 <div className="customer-img">
                     <h2>我们的客户</h2>
-                    <img alt="云桌面部署图" src={require("../static/customer-img.png")} />
+                    <img alt="云桌面部署图" src={"dinghuo"+require("../static/customer-img.png")} />
                 </div>            
             </div>
             <KtFooterComp/>

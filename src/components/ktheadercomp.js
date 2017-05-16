@@ -23,13 +23,7 @@ class KtHeaderComp extends React.Component{
     }
 
     render(){
-          const menu = (
-                <Menu>
-                  <Menu.Item>
-                    <a href="#"> <Icon type="logout" /> 注销</a>
-                  </Menu.Item>
-                </Menu>
-            );
+          
         return(
             <Menu
                 selectedKeys={[this.state.current]}   
@@ -47,10 +41,17 @@ class KtHeaderComp extends React.Component{
                  </SubMenu>
                 <Menu.Item key="service"><Link to="/service">原厂服务</Link></Menu.Item>
                 <Menu.Item key="customer"><Link to="/customer">购买须知</Link></Menu.Item>
-                {this.props.login?
+                {console.log("1111",this.props.loginOut)}
+                {this.props.loginOut !== undefined?
                                 <div style={{float:"right"}} >
-                                    <Dropdown overlay={menu}>
-                                          <span>{this.props.login} <Icon type="down" /> </span>                                     
+                                    <Dropdown overlay={
+                                        <Menu>
+                                          <Menu.Item>
+                                            <a onClick={this.props.loginOut}> <Icon type="logout" /> 注销</a>
+                                          </Menu.Item>
+                                        </Menu>
+                                    }>
+                                          <span>已登录<Icon type="down" /> </span>                                     
                                     </Dropdown>
                                 </div>
                                 :

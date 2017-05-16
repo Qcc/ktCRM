@@ -19,25 +19,55 @@ const formItemLayout = {
 
 
 
-//复制正式授权码，小按钮
+//复制申请的临时授权码，小按钮
 class CopyIcon extends React.Component{
-    state={text:'复制CDK'}
+    state={
+        product:this.props.cdk.product?this.props.cdk.product.productName:'null',
+        cdk:this.props.cdk.key,
+        number:this.props.cdk.userNumber,
+        trail:this.props.cdk.isTrail === 1?'临时授权':'正版授权',
+        date:this.props.cdk.expirationDate,
+        copy:'复制',
+        icon:'copy',
+    }
     //props参数校验
     static propTypes = {
-        cdk: React.PropTypes.string.isRequired,
+        cdk: React.PropTypes.object.isRequired,
     };
-    handleCopy(e){this.setState({text:'复制成功'})}
-    onMouseOut(){this.setState({text:'复制CDK'})} 
+    handleCopy=(e)=>{
+      var txt=document.getElementById("cdkey");
+      txt.select(); // 选择对象
+      document.execCommand("Copy"); // 执行浏览器复制命令
+      this.setState({
+          copy:'已复制',
+          icon:'check',
+        });
+    }
+    handleMoseOut=()=>{
+      this.setState({
+        copy:'复制授权',
+        icon:'copy',        
+      });
+    }
+
     render(){
       return(
-         <Tooltip placement="rightTop" 
-            title={this.state.text}
-            onClick={(e)=>this.handleCopy(e)}
-            onMouseLeave={()=>this.onMouseOut()} 
-          >
-           <span>{this.props.cdk} </span>
-          <Button type='dashed' shape="circle" icon="copy"/>
-        </Tooltip>
+           <div  onMouseOut={this.handleMoseOut} style={{textAlign:"center",position:"relative"}}>
+              <Input type="textarea" cols="20" rows="5" id="cdkey" 
+                  value={
+                 "适用产品:"+this.state.product +
+                  "\n授权码:"+this.state.cdk +
+                  "\n用户数:"+this.state.number +
+                  "\n类型:"+this.state.trail +
+                  "\n过期时间:"+this.state.date
+                }/>
+                <br />
+                <Tooltip  placement="topRight" title={this.state.copy}>
+                  <Icon style={{position:"absolute",top:"10px",right:"10px"}} 
+                        onClick={this.handleCopy} 
+                        type={this.state.icon}/>
+                </Tooltip>
+           </div>
       );
     }
 }
@@ -640,11 +670,11 @@ class FilterTable extends React.Component {
     console.log('onActivationSearch',value, record);
   }
  
-  //编辑某行
-  onRowEdit=(text, record, index)=>{
-    console.log("text------",text,"record------",record, "index----- ", index)
-      return(<a onClick={this.onRowEditClick(text)}>编辑</a>);
-  }
+  // //编辑某行
+  // onRowEdit=(text, record, index)=>{
+  //   console.log("text------",text,"record------",record, "index----- ", index)
+  //     return(<a onClick={this.onRowEditClick(text)}>加点</a>);
+  // }
   onRowEditClick=(text)=>{
     console.log("====text===",text);
   }
@@ -735,7 +765,7 @@ class FilterTable extends React.Component {
         //编辑行
         render: (text, record, index) => {
           return (
-            this.state.data.length > 1 ?(<Button  onClick={()=>{this.refsModCdkModal.showModal(record);console.log("表格行",record);}} >编辑</Button>) : null
+            <a onClick={()=>this.refsModCdkModal.showModal(record)}>加点</a>
           );
       }, 
       }];
