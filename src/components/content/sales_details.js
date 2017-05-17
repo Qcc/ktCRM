@@ -15,18 +15,18 @@ class Inventory extends React.Component{
     }
     //库存 请求回调
   upState=(data)=>{
-       if(data){
-        let stock = data.entity.part1;
+       if(data.entity){
+        let stock =data.entity.part1;
         for (var key in stock) {
-          if(stock[key].id === 1){
+          if(stock[key].product.productId === 1){
               this.setState({
                 ctbsAdvCount:stock[key].points,              
               });
-          }else if(stock[key].id === 2){
+          }else if(stock[key].product.productId === 2){
               this.setState({
                 ctbsEnterpriseCount:stock[key].points,              
               });
-          }else if(stock[key].id === 3){
+          }else if(stock[key].product.productId === 3){
               this.setState({
               cloudAppCount:stock[key].points,              
               });
@@ -53,9 +53,9 @@ class Inventory extends React.Component{
     //库存小于30个站点红色显示 账户余额 = 现金账户 + 优惠账户 
     render(){
         return(<div>
-            {this.invenList('云桌面',this.state.cloudAppCount)}
-            {this.invenList('CTBS高级版',this.state.ctbsAdvCount)}
-            {this.invenList('CTBS企业版',this.state.ctbsEnterpriseCount)}
+            {this.invenList('云桌面库存',this.state.cloudAppCount)}
+            {this.invenList('CTBS高级版库存',this.state.ctbsAdvCount)}
+            {this.invenList('CTBS企业版库存',this.state.ctbsEnterpriseCount)}
             {this.invenList('账户余额',this.state.cashAccount)} 
             </div>);
     }
@@ -75,7 +75,7 @@ class SalesTable extends React.Component {
                     pageSizeOptions:['10','50','150','500'],
                     showQuickJumper:true,
                   }, //分页器
-      loading: false, //表格加载状态
+      loading: true, //表格加载状态
     };
   }
 
@@ -126,9 +126,6 @@ class SalesTable extends React.Component {
 
   //表格组件加载时加载数据
   componentDidMount() {
-    this.setState({
-      loading:true,
-    });
     fetch(getLicActPager,this.tableUpdata,{pageNO:1,size:10,"product.productId":this.props.productId});
   }
 

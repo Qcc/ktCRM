@@ -1,38 +1,33 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Menu,Icon,Dropdown} from 'antd';
+import {Menu,Icon} from 'antd';
 import '../styles/header.css';
 
 const SubMenu = Menu.SubMenu;
 class KtHeaderComp extends React.Component{
-    state = {
-            current: this.props.active,
-            theme:this.props.theme,
-    }
+    // state = {
+    //         current: this.props.active,
+    // }
     static propTypes ={
         active:React.PropTypes.string,
         theme:React.PropTypes.string,
-        login:React.PropTypes.node,
+        loginOut:React.PropTypes.func,
     }
 
-    componentWillMount(){
-         this.setState({
-         theme:this.props.theme ? 'light' : 'dark',
-         current:this.props.active ? this.props.active:'',
-    });
-    }
-
+ 
     render(){
           
         return(
             <Menu
-                selectedKeys={[this.state.current]}   
+                 selectedKeys={[this.props.active]}   
+                theme={this.props.theme}
                 mode="horizontal"
-                theme={this.state.theme}
                 style={{ lineHeight: '64px'}}
+                onClick={(item)=>{if(item.key === "main")this.props.loginOut()}} 
                 className='header'
             >   
-                <Icon className='logo' />
+                
+                <Menu.Item key="logo"><Icon className='logo' /></Menu.Item>                
                 <Menu.Item key="home"><Link to="/">首页</Link></Menu.Item>
                 <SubMenu className='head-submenu' title={<span>应用虚拟化产品  </span>}>                     
                        <Menu.Item className='head-submenu-item' key="ctbsAdv"><Link to="/ctbsAdv">CTBS高级版</Link></Menu.Item>
@@ -41,19 +36,10 @@ class KtHeaderComp extends React.Component{
                  </SubMenu>
                 <Menu.Item key="service"><Link to="/service">原厂服务</Link></Menu.Item>
                 <Menu.Item key="customer"><Link to="/customer">购买须知</Link></Menu.Item>
-                {console.log("1111",this.props.loginOut)}
-                {this.props.loginOut !== undefined?
-                                <div style={{float:"right"}} >
-                                    <Dropdown overlay={
-                                        <Menu>
-                                          <Menu.Item>
-                                            <a onClick={this.props.loginOut}> <Icon type="logout" /> 注销</a>
-                                          </Menu.Item>
-                                        </Menu>
-                                    }>
-                                          <span>已登录<Icon type="down" /> </span>                                     
-                                    </Dropdown>
-                                </div>
+                {this.props.loginOut?
+                                <Menu.Item  key="main" style={{float:'right'}}>
+                                    <Icon type="logout" />退出
+                                </Menu.Item>
                                 :
                                 <Menu.Item className='logonin' key="login" style={{float:'right'}}>
                                     <Link to="/login">登录</Link>

@@ -53,7 +53,6 @@ class Main extends React.Component{
           });
         },
         onCancel() {
-          console.log('Cancel');
         },
       }); 
     }
@@ -64,7 +63,7 @@ class Main extends React.Component{
            <div> 
               <Layout>
                 <Header> 
-                  <KtHeaderComp active='main'  loginOut={this.showConfirm}/>
+                  <KtHeaderComp active="main" theme="dark" loginOut={this.showConfirm}/>
                 </Header>
               <Layout>
                 <Sider width={200} style={{ background: '#fff' }}>

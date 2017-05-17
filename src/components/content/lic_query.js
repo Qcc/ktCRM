@@ -18,14 +18,7 @@ const columns = [{
   dataIndex: 'checked',
 }];
 
-
-
-class LicQuery extends React.Component{
-    constructor(props) {
-            super(props);
-            this.state = {
-            cdKey: '',
-            data:[{
+const data=[{
                   key: '1',
                   project: '客户',
                   status: '-',//status: 'Ok',
@@ -60,7 +53,16 @@ class LicQuery extends React.Component{
                   project: '激活',
                   status: '-',//status: 'Ok',
                   checked: '-',  // checked: '已激活', 
-                }],
+                }];
+
+class LicQuery extends React.Component{
+    constructor(props) {
+            super(props);
+            this.state = {
+            cdKey: '',
+            data:data,
+            queryStatus:"",
+            statusColor:""
             }
         }
 
@@ -82,6 +84,11 @@ class LicQuery extends React.Component{
     }
     //查询授权码
     query(e){
+      this.setState({
+        data:data,
+        queryStatus:"",
+        statusColor:"",
+      });
         let checked = this.test(this.state.cdKey);
         if(checked){
             message.error(checked);
@@ -96,10 +103,13 @@ class LicQuery extends React.Component{
          message.error('网络发生错误，请刷新(F5)重试！');
          return;
       }
-      let nowDate = new Date().getTime(); 
-      let expirationDate = new Date(data.entity.expirationDate).getTime();
-    this.setState({
-        data:[{
+      if(data.entity !== null){
+          let nowDate = new Date().getTime(); 
+          let expirationDate = new Date(data.entity.expirationDate).getTime();
+          this.setState({
+            queryStatus:"查询成功",
+            statusColor:"#0f0",
+            data:[{
                   key: '1',
                   project: '客户',
                   status: 'Ok',//status: 'Ok',
@@ -135,7 +145,13 @@ class LicQuery extends React.Component{
                   status: data.entity.activation?'Ok':'未激活',//status: 'Ok',
                   checked:  data.entity.activation?'已激活':'未激活',  // checked: '已激活', 
                 }]
-    });
+          });
+      }else{
+          this.setState({
+            queryStatus:"查询失败，授权码不正确或者没有权限查询该授权码。",
+            statusColor:"#f00",
+          });
+      }
   }
  
     render(){
@@ -161,7 +177,8 @@ class LicQuery extends React.Component{
                         />
                 </div>
                 <div>
-                    <h4>查询结果</h4>
+                    <h4 style={{display: "inline-block",margin:10}}>查询结果 :</h4>
+                    <h4 style={{display: "inline-block",color:this.state.statusColor}}>{this.state.queryStatus}</h4>
                      <Table style={{fontSize : 26}} columns={columns} dataSource={this.state.data} size="middle" />
                 </div>
             </div>

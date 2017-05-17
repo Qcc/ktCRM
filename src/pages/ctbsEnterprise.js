@@ -24,7 +24,7 @@ class CTBSEnterprise extends React.Component{
                                 互联网传输与用户端并没有真实的业务数据。这样做到了操作与数据隔离，成为了企业的安全堡垒。</p>                      
                     </div>
                     <div className="product-wrap">
-                          <img  alt="沟通科技云桌面" src={require("../static/ctbsEnterprise_1.jpg")} />
+                          <img  alt="沟通科技云桌面" src={"dinghuo"+require("../static/ctbsEnterprise_1.jpg")} />
                     </div>
                 </div>
                 <div className="features">

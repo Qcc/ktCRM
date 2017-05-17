@@ -2,7 +2,7 @@ import React from 'react';
 import {Button,Table, Input,InputNumber, 
         Icon,Modal,Form,Radio,Tooltip} from 'antd';
 import '../../styles/licgenu.css';
-import {licenseCountPager,generateFormal,addUserNumberAndDelay,fetch} from '../../utils/connect';
+import {licenseCountPager,generateFormal,addUserNumberAndDelay,query,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
 //修改授权码模态框
@@ -351,8 +351,12 @@ class ModCdkModal extends React.Component{
       expirationDate:"",
       key:"",
       productName:"",
+      productId:null,      
       userNumber:'',
       oldNumber:'',//保存原始站点数
+      userNumberHelp:"请输或者点击向上箭头入确认加站后的站点总数",
+      userNumberValid:"error",
+      stock:null,
     }
   }
 
@@ -372,26 +376,80 @@ class ModCdkModal extends React.Component{
       key:record.key,//授权码
       productName:record.productName, //产品版本
       userNumber:record.userNumber,//激活数
-      oldNumber:record.userNumber,//保存原始站点数     
+      oldNumber:record.userNumber,//保存原始站点数
+      productId:record.productId, //产品版本      
     });
+    //查询库存
+    fetch(query,this.stockState);    
   }
   //授权站点数
-  onUserNumberChange=(value)=>{this.setState({ userNumber: value });}
+  onUserNumberChange=(value)=>{
+      this.setState({ userNumber: value });
+      if(value<=this.state.oldNumber){
+      this.setState({ 
+          userNumberValid:"error",
+          userNumberHelp: "加站后的用户数不能小于现有用户数。", 
+        });        
+      }
+      if(value > this.state.oldNumber){
+      this.setState({ 
+          userNumberValid:"success",
+          userNumberHelp:"确认输入正确后点击确认加站，完成加站操作。", 
+        });        
+      }
+  }
+  //库存查询回调
+  stockState=(data)=>{
+    console.log("查询到库存 ",data);
+    if(data === null) {
+      this.setState({
+              stock:"未查询到库存，加站可能会失败！",
+            });     
+      return;      
+    }
+    if(data.errorCode === 0){
+      if(data.entity !== null){
+        for (var key in data.entity.part1) {
+          if (data.entity.part1[key].product.productId === this.state.productId) {
+            // 优先扣除库存
+            if(data.entity.part1[key].points >0){
+              this.setState({
+                stock:"可用库存 "+data.entity.part1[key].points+" 站点",
+              });
+            }else if(data.entity.part1[key].partner.balance > 0){
+                this.setState({
+                  stock:"可用余额 "+data.entity.part1[key].partner.balance +" 元",
+                });
+            }else{
+                this.setState({
+                  stock:"库存与可用余额不足，请订货后再操作。",
+                });
+            }
+          }
+        }
+      }
+    }else{
+      this.setState({
+              stock:"未查询到库存，加站可能会失败！",
+            });     
+    }
+  }
+   
 
   //加点 回调处理
   numberAndDelayUpdate=(data)=>{
-    this.setState({modCdkloading:false});    
-    if(data.status !== 200){
-      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
-      return;    
-    };
+    this.setState({modCdkloading:false});   
+
+    if(data === null) {
+      Modal.error({title: '错误！',content:'网络错误，请稍后刷新（F5）后重试。'});        
+      return;      
+    }
     if(data.errorCode === 0){
-      Modal.success({title: '成功！',content:'操作完成！'});
-      //通过父组件 表格传入的 props 函数更新表格
-      this.props.modTableCdk(this.state.key,this.state.newExpirationDate,this.state.userNumber);
-      }else{
-        Modal.error({title: '错误！',content:'服务器错误,'+data.message});      
-      }
+        Modal.success({title: '成功！',content:'操作完成！'});
+        this.props.modTableCdk(this.state.key,this.state.newExpirationDate,this.state.userNumber);
+    }else{
+      Modal.error({title: '错误！',content:`错误，${data.message},请稍后后重试。`});        
+    }
     this.handleCancel();      
   }
   //修改完成后，当点击保存按钮时，更新cdkey
@@ -404,8 +462,6 @@ class ModCdkModal extends React.Component{
     if(params.licKey){
       this.setState({ modCdkloading: true });
       fetch(addUserNumberAndDelay,this.numberAndDelayUpdate,params);
-    }else{
-      this.handleCancel();
     }
   }
   //取消修改
@@ -420,6 +476,9 @@ class ModCdkModal extends React.Component{
       productName:"",
       userNumber:'',
       oldNumber:'',
+      userNumberHelp:"请输或者点击向上箭头入确认加站后的站点总数",
+      userNumberValid:"error",
+      stock:null,
        });
   }
 
@@ -472,12 +531,13 @@ class ModCdkModal extends React.Component{
                     {...formItemLayout}
                     label="站点数"
                     hasFeedback
-                    validateStatus="warning"
+                    validateStatus={this.state.userNumberValid}
+                    help={this.state.userNumberHelp}
                     required
                   > 
                     <InputNumber min={+this.state.oldNumber} id="license" 
                       onChange={this.onUserNumberChange}
-                      value={this.state.userNumber} /><span>增加站点后扣取库存</span>
+                      value={this.state.userNumber} /><span>{this.state.stock}</span>
                   </FormItem>
 
                   <FormItem
@@ -519,7 +579,7 @@ class FilterTable extends React.Component {
       searchCustomerText: '',  //筛选客户名称 input value  
       cdkFiltered: false, //cdk筛选cdk input value
       customerFiltered: false, //客户名称筛选 input value
-      loading: false, //表格加载状态
+      loading: true, //表格加载状态
       doubleClick:false,//模拟表格双击事件
       pagination: { //分页器
                     showSizeChanger:true, //是否可设置每页显示多少行
@@ -554,7 +614,7 @@ class FilterTable extends React.Component {
   //获取表数据， 填充数据  加工数据展示
   licPagerUpdate=(data)=>{
     this.setState({loading:false});    
-    if(data.status !== 200){
+    if(data === null){
       Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
       return;    
     };
@@ -574,12 +634,11 @@ class FilterTable extends React.Component {
                       'expirationDate':entity[i].expirationDate,
                       'userNumber':entity[i].userNumber,
                       'productName':entity[i].product.productName,
+                      'productId':entity[i].product.productId,                      
                       'activation':entity[i].activation?'已激活':'未激活',
                       'endUserCompany':entity[i].endUserCompany,
                 });
     }
-    console.log("licPagerUpdate 收到的数据 ",data);
-    console.log("licPagerUpdate 整理后的state ",tableData);
     this.setState({
         data:tableData
     });
@@ -602,7 +661,6 @@ class FilterTable extends React.Component {
 
   //表格组件加载时加载数据
   componentDidMount() {
-    this.setState({loading:true});    
     fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,size:10}); //默认获取第一页，每页10行    
   }
 

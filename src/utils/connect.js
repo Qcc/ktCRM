@@ -22,12 +22,13 @@ export function fetch(url,callback,params = {},method='POST'){
       type: 'json',
     })
     .then((data) => {
-        if(data.status !== 200 && data.errorCode !== 0){
-          console.log("服务器错误 ",JSON.stringify(data,null,4));          
-          return;
+        if(data.status === 200){
+            console.log("成功获取到数据 ",JSON.stringify(data,null,4));
+            callback(data);
+        }else{
+            callback(null);          
+            console.log("服务器错误 ",JSON.stringify(data,null,4));          
         }
-        console.log("成功获取到数据 ",JSON.stringify(data,null,4));
-        callback(data);
         })
     .fail((err,msg)=>{
         console.log("err ",err,"msg ",msg);

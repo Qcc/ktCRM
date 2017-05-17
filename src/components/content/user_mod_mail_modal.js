@@ -9,8 +9,7 @@ class UserModMailModal extends React.Component{
         modMailVisible:false,
     }
 
-    componentDidMount(e){
-    }
+     
     //关闭修改邮箱模态框
     modMailCancel=(e)=>{this.setState({modMailVisible:false})}
     //打开修改邮箱模态框，父组件调用

@@ -535,7 +535,7 @@ class FilterTable extends React.Component {
       searchCustomerText: '',  //筛选客户名称 input value  
       cdkFiltered: false, //cdk筛选cdk input value
       customerFiltered: false, //客户名称筛选 input value
-      loading: false, //表格加载状态
+      loading: true, //表格加载状态
       doubleClick:false,//模拟表格双击事件
       pagination: { //分页器
                     showSizeChanger:true, //是否可设置每页显示多少行
@@ -618,7 +618,6 @@ class FilterTable extends React.Component {
 
   //表格组件加载时加载数据
   componentDidMount() {
-    this.setState({loading:true});    
     fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10}); //默认获取第一页，每页10行    
   }
 

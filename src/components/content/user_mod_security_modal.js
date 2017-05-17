@@ -9,9 +9,7 @@ class UserModSecurityModal extends React.Component{
         modSecurityVisible:false,
     }
 
-    componentDidMount(e){
-        
-    }
+    
     
 
     //关闭修改邮箱模态框
