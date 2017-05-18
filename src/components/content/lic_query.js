@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button,Icon,Input,Table,message} from 'antd';
-import {querylicense,fetch} from '../../utils/connect'; //库存数量Url
+import {querylicense,fetch,Modal} from '../../utils/connect'; //库存数量Url
 import '../../styles/licquery.css';
 message.config({
   top: 70,
@@ -99,11 +99,16 @@ class LicQuery extends React.Component{
     }
     //展示查询结果，回调
     upState(data){
-      if(!data){
-         message.error('网络发生错误，请刷新(F5)重试！');
-         return;
-      }
-      if(data.entity !== null){
+      if(data === null){
+        Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+        return;    
+        };
+        if(data.errorCode !== 0){
+            Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+            return;
+        }
+        if(data.entity !== null){
+            //成功拿到数据
           let nowDate = new Date().getTime(); 
           let expirationDate = new Date(data.entity.expirationDate).getTime();
           this.setState({

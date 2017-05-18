@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button,Table, Input,InputNumber,Date, 
-        Icon,Modal,Form,Radio,Tooltip} from 'antd';
+import {Button,Table, Input,InputNumber, 
+        Icon,Modal,Form,Radio} from 'antd';
 import '../../styles/lictemp.css';
 import {licenseCountPager,generateTrail,getSumDelayDays,addUserNumberAndDelay,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
@@ -17,6 +17,8 @@ const formItemLayout = {
   },
 };
 
+ 
+
 //复制申请的临时授权码，小按钮
 class CopyIcon extends React.Component{
     state={
@@ -25,7 +27,7 @@ class CopyIcon extends React.Component{
         number:this.props.cdk.userNumber,
         trail:this.props.cdk.isTrail === 1?'临时授权':'正版授权',
         date:this.props.cdk.expirationDate,
-        copy:'复制',
+        copy:'复制授权',
         icon:'copy',
     }
     //props参数校验
@@ -51,7 +53,7 @@ class CopyIcon extends React.Component{
     render(){
       return(
            <div  onMouseOut={this.handleMoseOut} style={{textAlign:"center",position:"relative"}}>
-              <Input type="textarea" cols="20" rows="5" id="cdkey" 
+              <Input  type="textarea" cols="20" rows="5" id="cdkey" 
                   value={
                  "适用产品:"+this.state.product +
                   "\n授权码:"+this.state.cdk +
@@ -59,12 +61,8 @@ class CopyIcon extends React.Component{
                   "\n类型:"+this.state.trail +
                   "\n过期时间:"+this.state.date
                 }/>
-                <br />
-                <Tooltip  placement="topRight" title={this.state.copy}>
-                  <Icon style={{position:"absolute",top:"10px",right:"10px"}} 
-                        onClick={this.handleCopy} 
-                        type={this.state.icon}/>
-                </Tooltip>
+                <Button style={{position:"absolute",right:"10px",top:"10px",color:"#00a854"}} 
+                        type="dashed" ghost onClick={this.handleCopy}>{this.state.copy}</Button>
            </div>
       );
     }
@@ -108,16 +106,18 @@ class AskTemlLicModal extends React.Component{
   }
  //申请临时授权回调
   trailUpdate=(data)=>{
-    console.log("申请临时授权码："+JSON.stringify(data,null,4));
+     
     this.setState({ askTempLoading: false, askTempVisible: false });
-    if(data.status !== 200){
-      Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
-      return;    
+        if(data === null){
+    Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+    return;    
     };
     if(data.errorCode !== 0){
-     Modal.error({title: '错误！',content:'服务器错误,'+data.message});
-     return;
+        Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+        return;
     }
+    if(data.entity !== null){
+        //成功拿到数据
      Modal.success({title: '成功！',content:<CopyIcon cdk={data.entity}/>});
      //申请成功，清除表单数据。
      this.setState({
@@ -126,6 +126,7 @@ class AskTemlLicModal extends React.Component{
       endUserName:'',//终端用户联系人
       endUserPhone:'',//终端用户电话
      });  
+    }
   }
   //确认申请临时授权
   handleOk = () => {
@@ -318,7 +319,6 @@ class ModCdkModal extends React.Component{
       modCdkloading: false, //修改授权模态框加载状态
       modCdkvisible: false, //修改授权模态框是否可见
       defaultExpirationDate:0, //默认延期0天
-      newExpirationDate:'',//新的有效期
       remainingDate:15,//剩余可延期的天数
       allowDay:15, //默认允许延期的最大天数 
       //每行CDK数据
@@ -329,6 +329,10 @@ class ModCdkModal extends React.Component{
       productName:"",
       userNumber:'',
       oldNumber:'',//保存原始站点数
+      ExpirationDateValid:"",
+      ExpirationDateHelp:"",
+      UserNumberValid:"",
+      UserNumberHelp:"",
     }
   }
 
@@ -338,7 +342,16 @@ class ModCdkModal extends React.Component{
     };
   //获取延期天数回调
   extensionDay=(data)=>{
-    if(data.errorCode ===0){
+        if(data === null){
+    Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+    return;    
+    };
+    if(data.errorCode !== 0){
+        Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+        return;
+    }
+    if(data.entity !== null){
+        //成功拿到数据
       this.setState({
         remainingDate:data.entity[0],//剩余可延期的天数
         allowDay:data.entity[1], //默认允许延期的最大天数
@@ -356,22 +369,50 @@ class ModCdkModal extends React.Component{
       activation:record.activation,//是否激活
       endUserCompany:record.endUserCompany, //客户公司名称
       expirationDate:record.expirationDate,//到期时间
-      newExpirationDate:record.expirationDate,//延期后 新的有效期
       key:record.key,//授权码
       productName:record.productName, //产品版本
       userNumber:record.userNumber,//激活数
       oldNumber:record.userNumber,//保存原始站点数     
       modCdkvisible: true,
+      ExpirationDateValid:"",
+      ExpirationDateHelp:"",
+      UserNumberValid:"",
+      UserNumberHelp:"",
     });
-    console.log("模态框--完",this.state.cdk);
+   
   }
   //授权站点数与延期
-  onUserNumberChange=(value)=>{this.setState({ userNumber: value });}
+  onUserNumberChange=(value)=>{
+      this.setState({ 
+          userNumber: value 
+        });
+    if(value < this.state.oldNumber){
+        this.setState({
+          UserNumberValid:"warning",
+          UserNumberHelp:"站点数小于现有站点，将减去现有站点数",
+        });
+      }else{
+        this.setState({
+          UserNumberValid:"",
+          UserNumberHelp:"",
+        });
+      }
+    }
   onExpirationDateChange=(value)=>{ 
     this.setState({ 
       defaultExpirationDate: value,
-      newExpirationDate:this.handleDate(value,this.state.expirationDate),
     });
+    if(value < 0){
+      this.setState({
+        ExpirationDateValid:"warning",
+        ExpirationDateHelp:"延期天数为负，授权可用天数将扣除",
+      });
+    }else{
+      this.setState({
+        ExpirationDateValid:"",
+        ExpirationDateHelp:"",
+      });
+    }
 }  
 
   //加点 延期，回调处理
@@ -384,13 +425,13 @@ class ModCdkModal extends React.Component{
     if(data.errorCode === 0){
       Modal.success({title: '成功！',content:'操作完成！'});
       //通过父组件 表格传入的 props 函数更新表格
-      this.props.modTableCdk(this.state.key,this.state.newExpirationDate,this.state.userNumber);
+      this.props.modTableCdk();
       }else{
         Modal.error({title: '错误！',content:'服务器错误,'+data.message});      
       }
     this.handleCancel();      
   }
-  //修改完成后，当点击保存按钮时，更新cdkey
+  //修改完成后，当点击保存按钮时，更新cdkey      
   handleOk = () => {
     this.setState({ modCdkloading: true });
     let params = {};
@@ -413,7 +454,6 @@ class ModCdkModal extends React.Component{
     this.setState({ 
       modCdkvisible: false, //修改授权模态框是否可见
       defaultExpirationDate:0, //默认延期0天
-      newExpirationDate:'',//新的有效期
       remainingDate:15,//剩余可延期的天数
       allowDay:15, //默认允许延期的最大天数 
       //每行CDK数据
@@ -426,16 +466,7 @@ class ModCdkModal extends React.Component{
       oldNumber:'',
        });
   }
-  //日期处理,根据输入的天数，返回延期后的日期，从当前日期开始算
-  handleDate=(day,expirationDate)=>{
-    let oldTime = new Date(expirationDate).getTime();
-    let nowTime = new Date().getTime();  
-    //如果授权已过期，根据当前时间延期
-    let oldMillisecond = oldTime<nowTime?nowTime:oldTime;
-    let dayMillisecond = day*(1000*60*60*24);
-    let newDate = new Date(oldMillisecond+dayMillisecond);
-    return newDate.getFullYear()+'-'+(newDate.getMonth()+1)+'-'+newDate.getDate();
-  }
+ 
 
   render(){
     return(
@@ -486,7 +517,8 @@ class ModCdkModal extends React.Component{
                     {...formItemLayout}
                     label="站点数"
                     hasFeedback
-                    validateStatus="warning"
+                    validateStatus={this.state.UserNumberValid}
+                    help={this.state.UserNumberHelp}
                     required
                   >
                     <InputNumber min={1} max={100} id="license" 
@@ -498,14 +530,14 @@ class ModCdkModal extends React.Component{
                     {...formItemLayout}
                     label="延期天数"
                     hasFeedback
-                    validateStatus="warning"
+                    validateStatus={this.state.ExpirationDateValid}
+                    help={this.state.ExpirationDateHelp}
                     required
                   >
-                    <InputNumber min={0} max={this.state.remainingDate} id="license" 
+                    <InputNumber   max={this.state.remainingDate} id="license" 
                         value={this.state.defaultExpirationDate}
                         onChange={this.onExpirationDateChange} 
-                        /><span>{this.state.defaultExpirationDate?`有效期至${this.state.newExpirationDate}`
-                              :`还可延期${this.state.remainingDate}天`}</span>
+                        /><span>{`还可延期${this.state.remainingDate}天`}</span>
                   </FormItem>
                   <FormItem
                    {...formItemLayout}
@@ -570,7 +602,7 @@ class FilterTable extends React.Component {
   //获取表数据， 填充数据  加工数据展示
   licPagerUpdate=(data)=>{
     this.setState({loading:false});    
-    if(data.status !== 200){
+    if(data === null){
       Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
       return;    
     };
@@ -578,46 +610,32 @@ class FilterTable extends React.Component {
      Modal.error({title: '错误！',content:'服务器错误,'+data.message});
      return;
     }
-     this.setState({
-         pagination:{
-             total:data.entity.count,
-         }
-     });
-    let entity = data.entity.list;
-    let tableData=[];
-    for(let i = 0;i < entity.length;i++){
-      tableData.push({'key':entity[i].key,
-                      'expirationDate':entity[i].expirationDate,
-                      'userNumber':entity[i].userNumber,
-                      'productName':entity[i].product.productName,
-                      'activation':entity[i].activation?'已激活':'未激活',
-                      'endUserCompany':entity[i].endUserCompany,
-                });
-    }
-    console.log("licPagerUpdate 收到的数据 ",data);
-    console.log("licPagerUpdate 整理后的state ",tableData);
-    this.setState({
-        data:tableData
-    });
-  }
-  //加点 延期后 更新表格内容通过props 修改回调 modTableCdk
-  modTableCdk=(key,date,userNumber)=>{
-    console.log('修改了 key',key,"延期",date,"加点",userNumber);
-    let tableData = this.state.data;
-    for(let i=0 ;i<tableData.length;i++){
-      if(tableData[i].key === key){
-          tableData[i].userNumber = userNumber;
-          tableData[i].expirationDate = date;
-          this.setState({
-              data:tableData,
-          });
-        return;
+    if(data.entity !== null){
+       this.setState({
+           pagination:{
+               total:data.entity.count,
+           }
+       });
+      let entity = data.entity.list;
+      let tableData=[];
+      for(let i = 0;i < entity.length;i++){
+        tableData.push({'key':entity[i].key,
+                        'expirationDate':entity[i].expirationDate,
+                        'userNumber':entity[i].userNumber,
+                        'productName':entity[i].product.productName,
+                        'activation':entity[i].activation?'已激活':'未激活',
+                        'endUserCompany':entity[i].endUserCompany,
+                  });
       }
+      this.setState({
+          data:tableData
+      });
     }
   }
+ 
 
   //表格组件加载时加载数据
-  componentDidMount() {
+  componentDidMount=()=>{
     fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10}); //默认获取第一页，每页10行    
   }
 
@@ -798,7 +816,7 @@ class FilterTable extends React.Component {
               pagination={this.state.pagination}   //分页器，配置项参考 pagination，设为 false 时不展示和进行分页
               loading={this.state.loading}   //页面是否加载中
               onChange={this.handleTableChange} /> 
-            <ModCdkModal modTableCdk={this.modTableCdk} ref={(node)=>this.refsModCdkModal=node}/>   
+            <ModCdkModal modTableCdk={this.componentDidMount} ref={(node)=>this.refsModCdkModal=node}/>   
         </div>
     );
   }

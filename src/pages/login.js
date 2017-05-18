@@ -11,7 +11,7 @@ import '../styles/common.css';
 
     
     let actionURL = login;
-//    let loginSuccessURL = "http://192.168.200.104:8080/dinghuo/#/protected/main";   
+    //let loginSuccessURL = "http://192.168.200.104:8080/dinghuo/#/protected/main";   
     let loginSuccessURL = "http://localhost:3000/#/main";       
     let validateCodeURL = validateCodeImgURL;
                                     

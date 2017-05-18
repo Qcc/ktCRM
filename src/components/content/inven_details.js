@@ -1,5 +1,5 @@
 import React from 'react';
-import { Table,Tabs} from 'antd';
+import { Table,Tabs,Modal} from 'antd';
 import {query,getOrderPagerByPartner,fetch} from '../../utils/connect'; //库存数量Url
 import '../../styles/inven.css';
 const TabPane = Tabs.TabPane;
@@ -15,7 +15,16 @@ class Inventory extends React.Component{
     }
     //库存 请求回调
   upState=(data)=>{
-      if(data.entity){
+    if(data === null){
+    Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+    return;    
+    };
+    if(data.errorCode !== 0){
+        Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+        return;
+    }
+    if(data.entity !== null){
+        //成功拿到数据
         let stock =data.entity.part1;
         for (var key in stock) {
           if(stock[key].product.productId === 1){
@@ -116,10 +125,16 @@ class InvenTable extends React.Component {
   }
   //表格数据填充回调
   tableUpdata=(data)=>{
-    console.log(data);
-    if(data.status !== 200 || data.errorCode !== 0){
-      return;
+        if(data === null){
+    Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
+    return;    
+    };
+    if(data.errorCode !== 0){
+        Modal.error({title: '错误！',content:'服务器错误,'+data.message});
+        return;
     }
+    if(data.entity !== null){
+        //成功拿到数据
     let list = data.entity.list;
     let tempDate =[];
     let tempPagination = this.state.pagination;
@@ -138,7 +153,7 @@ class InvenTable extends React.Component {
       data:tempDate,
       pagination:tempPagination,
     });
- 
+    }
   }
 
   //表格组件加载时加载数据

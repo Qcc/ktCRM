@@ -1,6 +1,6 @@
 import React from 'react';
 import {Button,Table, Input,InputNumber, 
-        Icon,Modal,Form,Radio,Tooltip} from 'antd';
+        Icon,Modal,Form,Radio} from 'antd';
 import '../../styles/licgenu.css';
 import {licenseCountPager,generateFormal,addUserNumberAndDelay,query,fetch} from '../../utils/connect';
 const FormItem = Form.Item;
@@ -17,9 +17,7 @@ const formItemLayout = {
   },
 };
 
-
-
-//复制申请的临时授权码，小按钮
+//复制申请的授权码，小按钮
 class CopyIcon extends React.Component{
     state={
         product:this.props.cdk.product?this.props.cdk.product.productName:'null',
@@ -27,7 +25,7 @@ class CopyIcon extends React.Component{
         number:this.props.cdk.userNumber,
         trail:this.props.cdk.isTrail === 1?'临时授权':'正版授权',
         date:this.props.cdk.expirationDate,
-        copy:'复制',
+        copy:'复制授权',
         icon:'copy',
     }
     //props参数校验
@@ -53,7 +51,7 @@ class CopyIcon extends React.Component{
     render(){
       return(
            <div  onMouseOut={this.handleMoseOut} style={{textAlign:"center",position:"relative"}}>
-              <Input type="textarea" cols="20" rows="5" id="cdkey" 
+              <Input  type="textarea" cols="20" rows="5" id="cdkey" 
                   value={
                  "适用产品:"+this.state.product +
                   "\n授权码:"+this.state.cdk +
@@ -61,12 +59,8 @@ class CopyIcon extends React.Component{
                   "\n类型:"+this.state.trail +
                   "\n过期时间:"+this.state.date
                 }/>
-                <br />
-                <Tooltip  placement="topRight" title={this.state.copy}>
-                  <Icon style={{position:"absolute",top:"10px",right:"10px"}} 
-                        onClick={this.handleCopy} 
-                        type={this.state.icon}/>
-                </Tooltip>
+                <Button style={{position:"absolute",right:"10px",top:"10px",color:"#00a854"}} 
+                        type="dashed" ghost onClick={this.handleCopy}>{this.state.copy}</Button>
            </div>
       );
     }
@@ -94,25 +88,129 @@ class AskGenuLicModal extends React.Component{
       nameHelp:'',
       phoneValid:'',
       phoneHelp:'',
+      stock:null,
+      productStock:null,
+      balanceStock:null,
     };
   }
   
   //表单input数据映射到state
-  endUserNumber=(value)=>{this.setState({endUserNumber:value});}
-  endUserCompany=(e)=>{this.setState({endUserCompany:e.target.value});}
-  endUserEmail=(e)=>{this.setState({endUserEmail:e.target.value});}
-  endUserName=(e)=>{this.setState({endUserName:e.target.value});}
-  endUserPhone=(e)=>{this.setState({endUserPhone:e.target.value});}
+  endUserNumber=(value)=>{
+    if(this.state.productStock !== null){
+      if(value > this.state.productStock){
+            this.setState({
+                userNumberValid:'error', //表单校验信息
+                userNumberHelp:'库存不足，请订货后再发放授权',
+              });
+      }else{
+          this.setState({
+                userNumberValid:'success', //表单校验信息
+                userNumberHelp:'',
+              });
+      }
+    }else if(this.state.balanceStock>0){
+        this.setState({
+                userNumberValid:'success', //表单校验信息
+                userNumberHelp:'',
+              });
+    }
+      this.setState({endUserNumber:value});
+    }
+  endUserCompany=(e)=>{
+      this.setState({
+        endUserCompany:e.target.value,
+        userCompanyValid:'success',
+        userCompanyHelp:'',
+      });}
+  endUserEmail=(e)=>{
+    this.setState({
+      endUserEmail:e.target.value,
+      emailValid:'success',
+      emailHelp:'',
+    });}
+  endUserName=(e)=>{
+    this.setState({
+      endUserName:e.target.value,
+      nameValid:'success',
+      nameHelp:'',
+    });}
+  endUserPhone=(e)=>{
+    this.setState({
+      endUserPhone:e.target.value,
+      phoneValid:'success',
+      phoneHelp:'',
+  });}
 
   //显示发放正式授权模态框界面
   showModal = () => {
     this.setState({
       askTempVisible: true,
     });
+    //查询库存
+    fetch(query,this.stockState);    
   }
+
+    //库存查询回调
+  stockState=(data)=>{
+    if(data === null) {
+      this.setState({
+              stock:"未查询到库存，发放授权可能会失败！",
+            });     
+      return;      
+    }
+    if(data.errorCode === 0){
+      if(data.entity !== null){
+        for (var key in data.entity.part1) {
+          if (data.entity.part1[key].product.productId === this.state.productId) {
+            // 优先扣除库存
+            if(data.entity.part1[key].points >0){
+              this.setState({
+                stock:"可用库存 "+data.entity.part1[key].points+" 站点",
+                productStock:data.entity.part1[key].points,
+              },()=>{
+                if(this.state.productStock !== null){
+                 if(this.state.endUserNumber > this.state.productStock){
+                      this.setState({
+                          userNumberValid:'error', //表单校验信息
+                          userNumberHelp:'库存不足，请订货后再发放授权',
+                        });
+                }else{
+                    this.setState({
+                          userNumberValid:'success', //表单校验信息
+                          userNumberHelp:'',                          
+                        });
+                }
+              }
+              });
+              
+            }else if(data.entity.part1[key].partner.balance > 0){
+                this.setState({
+                  stock:"可用货款 "+data.entity.part1[key].partner.balance +" 元",
+                  userNumberValid:'success', //表单校验信息
+                  userNumberHelp:'产品库存不足，将按照订货价扣除货款余额',
+                  balanceStock:data.entity.part1[key].partner.balance,
+                });
+            }else{
+                this.setState({
+                  stock:"库存与可用余额不足，请订货后再操作。",
+                  userNumberValid:'error', //表单校验信息
+                  userNumberHelp:'库存与可用余额不足，请订货后再操作。',
+                });
+            }
+          }
+        }
+      }
+    }else{
+      this.setState({
+              stock:"未查询到库存！",
+              userNumberValid:'error', //表单校验信息
+              userNumberHelp:'库存与可用余额不足，请订货后再操作。',
+            });     
+    }
+  }
+
  //发放正式 请求 授权回调
   formalUpdate=(data)=>{
-    console.log("发放正式授权码："+JSON.stringify(data,null,4));
     this.setState({ askTempLoading: false, askTempVisible: false });
     if(data.status !== 200){
       Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
@@ -122,7 +220,7 @@ class AskGenuLicModal extends React.Component{
      Modal.error({title: '错误！',content:'服务器错误,'+data.message});
      return;
     }
-     Modal.success({title: '成功！',content:<CopyIcon cdk={data.entity.key}/>});
+     Modal.success({title: '成功！',content:<CopyIcon cdk={data.entity}/>});
      //申请成功，清除表单数据。
      this.setState({
       endUserCompany:'',//终端用户公司名称
@@ -145,20 +243,8 @@ class AskGenuLicModal extends React.Component{
          nameValid,
          phoneValid,
         }=this.state;
-    this.setState({ askTempLoading: true });
+    
     //用户信息必填
-    if(endUserNumber > 0){
-      userNumberValid = 'success';
-      this.setState({
-        userNumberValid:'success', //表单校验信息
-      });
-    }else{
-      this.setState({
-        userNumberValid:'error', 
-        userNumberHelp:'站点数不能为0',
-        askTempLoading: false,
-      });
-    }
     if(endUserCompany !== ''){
       userCompanyValid = 'success';
       this.setState({
@@ -212,6 +298,7 @@ class AskGenuLicModal extends React.Component{
        emailValid ==='success' &&
        nameValid ==='success' &&
        phoneValid ==='success'){    
+      this.setState({ askTempLoading: true });
       let params = {productId:productId,
           userNumber:endUserNumber,
           endUserCompany:endUserCompany,
@@ -220,12 +307,8 @@ class AskGenuLicModal extends React.Component{
           endUserPhone:endUserPhone,}
           //请求数据
           fetch(generateFormal,this.formalUpdate,params);
-      console.log('没有请求');
     }
-    console.log('公司 ',userCompanyValid ,' 邮箱 ',
-       emailValid ,' 姓名 ' ,
-       nameValid ,' 电话 ',
-       phoneValid ,' 站点数 ',userNumberValid);
+    
   }
   //取消发放正式授权
   handleCancel = () => {
@@ -236,6 +319,17 @@ class AskGenuLicModal extends React.Component{
     this.setState({
       productId: e.target.value,
     });
+
+    if(this.state.productStock !== null){
+      if(this.state.endUserNumber > this.state.productStock){
+            this.setState({
+                userNumberValid:'error', //表单校验信息
+                userNumberHelp:'库存不足，请订货后再发放授权',
+              });
+      }
+    }
+
+    fetch(query,this.stockState);        
   }
   render() {
     return (
@@ -272,7 +366,9 @@ class AskGenuLicModal extends React.Component{
                      validateStatus={this.state.userNumberValid}
                      help={this.state.userNumberHelp}
                    >
-                     <InputNumber onChange={this.endUserNumber} value={this.state.endUserNumber} min={1}  id="validating" />
+                     <InputNumber onChange={this.endUserNumber} 
+                                  value={this.state.endUserNumber} min={1}  id="validating" />
+                                  <span>{this.state.stock}</span>
                    </FormItem>
                  
                    <FormItem
