@@ -20,7 +20,7 @@ class UserMod extends React.Component{
             contact:data.entity && data.entity.name,
             level: data.entity && data.entity.level,
             company:data.entity && data.entity.company,
-            phone:data.entity&& data.entity.phone,
+            phone:data.entity && data.entity.phone,
         });
     }
     componentDidMount() {

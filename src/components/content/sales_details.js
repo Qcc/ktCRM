@@ -54,7 +54,7 @@ class Inventory extends React.Component{
   //根据是否有库存显示库存
   invenList=(item,state)=>{
        if(state){
-          return(<span className='inven-count'>{item}-(<span style={{color:30 >state?"#f00":"#77c34f"}}>{state}</span>)</span>);
+          return(<span className='inven-count'>{item}(<span style={{color:30 >state?"#f00":"#77c34f"}}>{state}</span>)</span>);
        }else{
          return null;
        }

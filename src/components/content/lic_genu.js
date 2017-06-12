@@ -96,8 +96,7 @@ class AskGenuLicModal extends React.Component{
   
   //表单input数据映射到state
   endUserNumber=(value)=>{
-    if(this.state.productStock !== null){
-      if(value > this.state.productStock){
+      if(value > this.state.productStock && !this.state.balanceStock){
             this.setState({
                 userNumberValid:'error', //表单校验信息
                 userNumberHelp:'库存不足，请订货后再发放授权',
@@ -108,12 +107,6 @@ class AskGenuLicModal extends React.Component{
                 userNumberHelp:'',
               });
       }
-    }else if(this.state.balanceStock>0){
-        this.setState({
-                userNumberValid:'success', //表单校验信息
-                userNumberHelp:'',
-              });
-    }
       this.setState({endUserNumber:value});
     }
   endUserCompany=(e)=>{
@@ -152,6 +145,7 @@ class AskGenuLicModal extends React.Component{
 
     //库存查询回调
   stockState=(data)=>{
+    let tempStock=0;
     if(data === null) {
       this.setState({
               stock:"未查询到库存，发放授权可能会失败！",
@@ -164,48 +158,40 @@ class AskGenuLicModal extends React.Component{
           if (data.entity.part1[key].product.productId === this.state.productId) {
             // 优先扣除库存
             if(data.entity.part1[key].points >0){
+              tempStock=data.entity.part1[key].points;
               this.setState({
-                stock:"可用库存 "+data.entity.part1[key].points+" 站点",
                 productStock:data.entity.part1[key].points,
-              },()=>{
-                if(this.state.productStock !== null){
-                 if(this.state.endUserNumber > this.state.productStock){
-                      this.setState({
-                          userNumberValid:'error', //表单校验信息
-                          userNumberHelp:'库存不足，请订货后再发放授权',
-                        });
-                }else{
-                    this.setState({
-                          userNumberValid:'success', //表单校验信息
-                          userNumberHelp:'',                          
-                        });
-                }
-              }
               });
-              
-            }else if(data.entity.part1[key].partner.balance > 0){
-                this.setState({
-                  stock:"可用货款 "+data.entity.part1[key].partner.balance +" 元",
-                  userNumberValid:'success', //表单校验信息
-                  userNumberHelp:'产品库存不足，将按照订货价扣除货款余额',
-                  balanceStock:data.entity.part1[key].partner.balance,
-                });
-            }else{
-                this.setState({
-                  stock:"库存与可用余额不足，请订货后再操作。",
-                  userNumberValid:'error', //表单校验信息
-                  userNumberHelp:'库存与可用余额不足，请订货后再操作。',
-                });
-            }
+          }else{
+            this.setState({
+                productStock:0,
+              });
           }
         }
+      }        
+      if(data.entity.part2.balance > 0){
+                this.setState({
+                  balanceStock:data.entity.part2.balance,
+                });
+        }else{
+                this.setState({
+                  balanceStock:0,
+                });
+            }
       }
-    }else{
+     if(tempStock || data.entity.part2.balance){
+      this.setState({
+              stock:(tempStock?'可用库存'+tempStock+'点，':'') + (data.entity.part2.balance?'可用货款'+data.entity.part2.balance+'元。':''),
+              userNumberValid:'success', //表单校验信息
+              userNumberHelp:'',
+            }); 
+     }else{
       this.setState({
               stock:"未查询到库存！",
               userNumberValid:'error', //表单校验信息
-              userNumberHelp:'库存与可用余额不足，请订货后再操作。',
+              userNumberHelp:'库存不足，请订货后再操作。',
             });     
+     }
     }
   }
 
@@ -329,7 +315,7 @@ class AskGenuLicModal extends React.Component{
       }
     }
 
-    fetch(query,this.stockState);        
+    fetch(query,this.stockState,{partnerId:0,productId:e.target.value});        
   }
   render() {
     return (
@@ -452,6 +438,8 @@ class ModCdkModal extends React.Component{
       oldNumber:'',//保存原始站点数
       userNumberHelp:"请输或者点击向上箭头入确认加站后的站点总数",
       userNumberValid:"error",
+      productStock:0,
+      balanceStock:0,
       stock:null,
     }
   }
@@ -496,7 +484,7 @@ class ModCdkModal extends React.Component{
   }
   //库存查询回调
   stockState=(data)=>{
-    console.log("查询到库存 ",data);
+    let tempStock=0;
     if(data === null) {
       this.setState({
               stock:"未查询到库存，加站可能会失败！",
@@ -509,25 +497,40 @@ class ModCdkModal extends React.Component{
           if (data.entity.part1[key].product.productId === this.state.productId) {
             // 优先扣除库存
             if(data.entity.part1[key].points >0){
+              tempStock=data.entity.part1[key].points;
               this.setState({
-                stock:"可用库存 "+data.entity.part1[key].points+" 站点",
+                productStock:data.entity.part1[key].points,
               });
-            }else if(data.entity.part1[key].partner.balance > 0){
-                this.setState({
-                  stock:"可用余额 "+data.entity.part1[key].partner.balance +" 元",
-                });
-            }else{
-                this.setState({
-                  stock:"库存与可用余额不足，请订货后再操作。",
-                });
-            }
+          }else{
+            this.setState({
+                productStock:0,
+              });
           }
         }
+      }        
+      if(data.entity.part2.balance > 0){
+                this.setState({
+                  balanceStock:data.entity.part2.balance,
+                });
+        }else{
+                this.setState({
+                  balanceStock:0,
+                });
+            }
       }
-    }else{
+     if(tempStock || data.entity.part2.balance){
       this.setState({
-              stock:"未查询到库存，加站可能会失败！",
+              stock:(tempStock?'可用库存'+tempStock+'点，':'') + (data.entity.part2.balance?'可用货款'+data.entity.part2.balance+'元。':''),
+              userNumberValid:'success', //表单校验信息
+              userNumberHelp:'',
+            }); 
+     }else{
+      this.setState({
+              stock:"未查询到库存！",
+              userNumberValid:'error', //表单校验信息
+              userNumberHelp:'库存不足，请订货后再操作。',
             });     
+     }
     }
   }
    
@@ -700,7 +703,7 @@ class FilterTable extends React.Component {
     });
     let params = {"type":1,
                   "pageNO":pagination.current,
-                  "size":pagination.pageSize,
+                  "pageSize":pagination.pageSize,
                   //"activation":,  //激活状态，产品暂不实现网络查询，server端未实现and查询功能
                   //'product.productId':
                 };
@@ -732,7 +735,7 @@ class FilterTable extends React.Component {
                       'productName':entity[i].product.productName,
                       'productId':entity[i].product.productId,                      
                       'activation':entity[i].activation?'已激活':'未激活',
-                      'endUserCompany':entity[i].endUserCompany,
+                      'endUserCompany':entity[i].customer && entity[i].customer.company,
                 });
     }
     this.setState({
@@ -757,7 +760,7 @@ class FilterTable extends React.Component {
 
   //表格组件加载时加载数据
   componentDidMount() {
-    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,size:10}); //默认获取第一页，每页10行    
+    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,pageSize:10}); //默认获取第一页，每页10行    
   }
 
   //表头筛选部分
@@ -784,7 +787,7 @@ class FilterTable extends React.Component {
     //筛选后重新加载数据
     this.setState({loading:true});    
     //根据搜索cdk筛选查询cdk
-    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,size:10,key:searchCdkText});
+    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,pageSize:10,key:searchCdkText});
     //清空筛选框
     this.setState({
       filterCdkVisible: false,
@@ -808,7 +811,7 @@ class FilterTable extends React.Component {
     //筛选后重新加载数据
     this.setState({loading:true});    
     //根据搜索 公司名称 筛选查询cdk
-    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,size:10,endUserCompany:searchCustomerText});
+    fetch(licenseCountPager,this.licPagerUpdate,{type:1,pageNO:1,pageSize:10,endUserCompany:searchCustomerText});
     //清空筛选框
     this.setState({
       filterCustomerVisible: false,

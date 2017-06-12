@@ -9,7 +9,7 @@ ajax请求函数
 @params 请求参数对象
 */
 export function fetch(url,callback,params = {},method='POST'){
-    // console.log("调用了fecth =",'url',url,'method',method,'params:', params);
+    console.log("调用了fecth =",'url',url,'method',method,'params:', params);
     reqwest({
       url: url,
       method: method,
@@ -23,7 +23,7 @@ export function fetch(url,callback,params = {},method='POST'){
     })
     .then((data) => {
         if(data.status === 200){
-            // console.log("成功获取到数据 ",JSON.stringify(data,null,4));
+            console.log("成功获取到数据 ",JSON.stringify(data,null,4));
             callback(data);
         }else{
             callback(null);          
@@ -37,9 +37,11 @@ export function fetch(url,callback,params = {},method='POST'){
   };
 
 //伙伴登录
-//export const login = rootUrl+"/public/user/login.api";
+export const login = rootUrl+"/public/user/login.api";
 //kouton登录
-export const login = rootUrl+"/public/user/koutonlogin.api";
+// export const login = rootUrl+"/public/user/koutonlogin.api"; 
+//是否登录
+export const isLoggedIn = rootUrl + "/public/user/isLoggedIn.api";
 //退出
 export const logout = rootUrl+"/public/user/logout.api";
 //查询单个license

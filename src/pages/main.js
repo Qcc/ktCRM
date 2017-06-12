@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu,Modal,Breadcrumb ,Icon} from 'antd';
+import { Layout, Menu,Breadcrumb ,Icon} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
 import UserMod from '../components/content/user_mod';
@@ -8,11 +8,10 @@ import LicTemp from '../components/content/lic_temp';
 import LicGenu from '../components/content/lic_genu';
 import InvenDetails from '../components/content/inven_details';
 import SalesDetails from '../components/content/sales_details';
-import {logout,fetch} from '../utils/connect';
+// import {isLoggedIn,fetch} from '../utils/connect';
 import '../styles/main.css';
 
 const { SubMenu } = Menu;
-const confirm = Modal.confirm;
 const { Header, Content, Sider } = Layout;
 const childComponent = {
       userMod:UserMod,
@@ -23,13 +22,14 @@ const childComponent = {
       salesDetails:SalesDetails,
     };
 class Main extends React.Component{
+    state = {
+      currentComponent:childComponent.userMod,
+    }
 
     //加载页面时修改title
     componentDidMount() {
         document.title='订货系统-深圳市沟通科技有限公司';
-    }
-    state = {
-      currentComponent:childComponent.userMod,
+        window.isLoggedIn=true;            
     }
     //点击切换菜单
     handleClick = (e) => {
@@ -40,22 +40,7 @@ class Main extends React.Component{
       //window.location.hash = e.key;//将页面切换到点击菜单页面
     }
    
-    //确认是否退出
-    showConfirm=()=>{
-      confirm({
-        title: '请确认',
-        content: '要退出当前登录的账户吗？',
-        onOk() {
-          fetch(logout,(data)=>{
-            if(data){
-              window.location.hash ='/';       
-            }
-          });
-        },
-        onCancel() {
-        },
-      }); 
-    }
+   
      
    
     render(){
@@ -63,7 +48,7 @@ class Main extends React.Component{
            <div> 
               <Layout>
                 <Header> 
-                  <KtHeaderComp active="main" theme="dark" loginOut={this.showConfirm}/>
+                  <KtHeaderComp isloged={true} active="main" theme="dark"/>
                 </Header>
               <Layout>
                 <Sider width={200} style={{ background: '#fff' }}>

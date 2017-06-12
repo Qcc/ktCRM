@@ -1,29 +1,64 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
-import {Menu,Icon} from 'antd';
+import {Menu,Icon,Modal} from 'antd';
+import {logout,isLoggedIn,fetch} from '../utils/connect';
+
 import '../styles/header.css';
 
 const SubMenu = Menu.SubMenu;
+const confirm = Modal.confirm;
 class KtHeaderComp extends React.Component{
-    // state = {
-    //         current: this.props.active,
-    // }
+     
+    timer =()=> setInterval(()=>{fetch(isLoggedIn,this.isLoggedInUpdate);},600000);
+    componentDidMount=()=>{
+        if(window.isLoggedIn){
+            this.timer();
+        }
+        
+    }
+    isLoggedInUpdate=(data)=>{
+        if(!data){
+            return;
+        }
+        if(data.entity === 1){
+           window.isLoggedIn=true; 
+        }
+       if(data.entity === 0){
+           window.isLoggedIn=false;               
+        } 
+    }
+    
     static propTypes ={
         active:React.PropTypes.string,
         theme:React.PropTypes.string,
-        loginOut:React.PropTypes.func,
     }
+     //确认是否退出
+    showConfirm=()=>{
+      confirm({
+        title: '请确认',
+        content: '要退出当前登录的账户吗？',
+        onOk() {
+          fetch(logout,(data)=>{
+            if(data){
+              window.isLoggedIn=false;                             
+              window.location.hash ='/';       
+            }
+          });
+        },
+        onCancel() {
+        },
+      }); 
+    }
+     
 
  
     render(){
-          
         return(
             <Menu
                  selectedKeys={[this.props.active]}   
                 theme={this.props.theme}
                 mode="horizontal"
                 style={{ lineHeight: '64px'}}
-                onClick={(item)=>{if(item.key === "main")this.props.loginOut()}} 
                 className='header'
             >   
                 
@@ -36,15 +71,18 @@ class KtHeaderComp extends React.Component{
                  </SubMenu>
                 <Menu.Item key="service"><Link to="/service">原厂服务</Link></Menu.Item>
                 <Menu.Item key="customer"><Link to="/customer">购买须知</Link></Menu.Item>
-                {this.props.loginOut?
-                                <Menu.Item  key="main" style={{float:'right'}}>
-                                    <Icon type="logout" />退出
-                                </Menu.Item>
-                                :
-                                <Menu.Item className='logonin' key="login" style={{float:'right'}}>
-                                    <Link to="/login">登录</Link>
-                                </Menu.Item>}
-            </Menu>
+                {window.isLoggedIn || this.props.isloged?
+                        <Menu.Item   key="loginOut" style={{float:'right'}} >
+                            <span onClick={this.showConfirm}>注销</span>
+                        </Menu.Item>:''}
+                {window.isLoggedIn || this.props.isloged? 
+                         <Menu.Item   key="online" style={{float:'right'}} >
+                            <Link to="/main"><Icon type="user" />已登录</Link>
+                        </Menu.Item>:
+                        <Menu.Item className='logonin' key="login" style={{float:'right'}} >
+                            <Link to="/login">登录</Link>
+                        </Menu.Item>}
+                </Menu>
         );
     }
 }

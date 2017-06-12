@@ -62,7 +62,8 @@ class LicQuery extends React.Component{
             cdKey: '',
             data:data,
             queryStatus:"",
-            statusColor:""
+            statusColor:"",
+            loading: false,
             }
         }
 
@@ -94,11 +95,16 @@ class LicQuery extends React.Component{
             message.error(checked);
             return;
         }
-        console.log(checked);
+        this.setState({
+        loading:true,
+        });
         fetch(querylicense,this.upState.bind(this),{licKey:this.state.cdKey})
     }
     //展示查询结果，回调
     upState(data){
+      this.setState({
+        loading:false,
+      });
       if(data === null){
         Modal.error({title: '错误！',content:'网络错误，请刷新（F5）后重试。'});  
         return;    
@@ -118,7 +124,7 @@ class LicQuery extends React.Component{
                   key: '1',
                   project: '客户',
                   status: 'Ok',//status: 'Ok',
-                  checked: data.entity.endUserCompany,//checked: '深圳市沟通科技有限公司',
+                  checked: data.entity.customer.company,//checked: '深圳市沟通科技有限公司',
                 },{
                   key: '2',
                   project: '授权码',
@@ -162,7 +168,7 @@ class LicQuery extends React.Component{
     render(){
         const { cdKey } = this.state;
         const suffix = cdKey ? <Icon type="close-circle"  onClick={this.emitEmpty} /> : null;
-        const queryButton = <Button onClick={()=>this.query()} type="primary">查询(Enter)</Button>
+        const queryButton = <Button loading={this.state.loading} onClick={()=>this.query()} type="primary">查询(Enter)</Button>
         return(
             <div>
                 <div className='userquery-title'>

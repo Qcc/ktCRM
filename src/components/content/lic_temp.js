@@ -592,7 +592,7 @@ class FilterTable extends React.Component {
     });
     let params = {"type":0,
                   "pageNO":pagination.current,
-                  "size":pagination.pageSize,
+                  "pageSize":pagination.pageSize,
                   //"activation":,  //激活状态，产品暂不实现网络查询，server端未实现and查询功能
                   //'product.productId':
                 };
@@ -636,7 +636,7 @@ class FilterTable extends React.Component {
 
   //表格组件加载时加载数据
   componentDidMount=()=>{
-    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10}); //默认获取第一页，每页10行    
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,pageSize:10}); //默认获取第一页，每页10行    
   }
 
   //表头筛选部分
@@ -663,7 +663,7 @@ class FilterTable extends React.Component {
     //筛选后重新加载数据
     this.setState({loading:true});    
     //根据搜索cdk筛选查询cdk
-    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10,key:searchCdkText});
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,pageSize:10,key:searchCdkText});
     //清空筛选框
     this.setState({
       filterCdkVisible: false,
@@ -687,7 +687,7 @@ class FilterTable extends React.Component {
     //筛选后重新加载数据
     this.setState({loading:true});    
     //根据搜索 公司名称 筛选查询cdk
-    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,size:10,endUserCompany:searchCustomerText});
+    fetch(licenseCountPager,this.licPagerUpdate,{type:0,pageNO:1,pageSize:10,endUserCompany:searchCustomerText});
     //清空筛选框
     this.setState({
       filterCustomerVisible: false,
