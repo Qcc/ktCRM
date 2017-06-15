@@ -55,7 +55,7 @@ class Inventory extends React.Component{
   invenList=(item,state)=>{
        if(state){
           return(
-          <span className='inven-count'>{item}-(<span style={{color:30 >state?"#f00":"#77c34f"}}>{state}</span>)</span>);
+          <span className='inven-count'>{item}(<span style={{color:30 >state?"#f00":"#77c34f"}}>{state}</span>)</span>);
        }else{
          return null;
        }

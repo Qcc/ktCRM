@@ -24,7 +24,7 @@ class CTBSEnterprise extends React.Component{
                                 互联网传输与用户端并没有真实的业务数据。这样做到了操作与数据隔离，成为了企业的安全堡垒。</p>                      
                     </div>
                     <div className="product-wrap">
-                          <img  alt="CTBS企业版" src={"dinghuo"+require("../static/ctbsEnterprise_1.jpg")} />
+                          <img  alt="CTBS企业版" src={'dinghuo'+require("../static/ctbsEnterprise_1.jpg")} />
                     </div>
                 </div>
                 <div className="features">
@@ -43,11 +43,11 @@ class CTBSEnterprise extends React.Component{
                 </div>
                 <div className="topology-img">
                     <h2>CTB企业版版部署图</h2>
-                    <img alt="CTBS部署图" src={"dinghuo"+require("../static/topology-ctbs.png")} />
+                    <img alt="CTBS部署图" src={'dinghuo'+require("../static/topology-ctbs.png")} />
                 </div>     
                 <div className="customer-img">
                     <h2>我们的客户</h2>
-                    <img alt="我们的客户" src={"dinghuo"+require("../static/customer-img.png")} />
+                    <img alt="我们的客户" src={'dinghuo'+require("../static/customer-img.png")} />
                 </div>            
             </div>
             <KtFooterComp/>

@@ -4,22 +4,16 @@ import { Form} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import LoginForm from '../components/LoginForm';
 import KtFooterComp from '../components/ktfootercomp';
-import {validateCodeImgURL,login} from '../utils/connect';
+import {validateCodeImgURL,login ,loginSuccessURL} from '../utils/connect';
 import '../styles/login.css'; 
 import '../styles/common.css'; 
 
 
     
-    let actionURL = login;
-    //let loginSuccessURL = "http://192.168.200.104:8080/dinghuo/#/protected/main";   
-    let loginSuccessURL = "http://localhost:3000/#/main";       
-    let validateCodeURL = validateCodeImgURL;
-                                    
-    // let urlRoot = 'http://192.168.200.104:8080/dinghuo/';
-    // let actionURL = urlRoot + "public/user/login.api";
-    // // let loginSuccessURL = urlRoot + "protected/main.html";
-    // let loginSuccessURL = "http://192.168.200.176:3000/#/main";   
-    // let validateCodeURL = urlRoot + "public/user/validateCodeImg.api";
+    // let actionURL = login;
+    // let loginSuccessURL = "http://192.168.200.104:8080/dinghuo/#/protected/main";   
+    // let loginSuccessURL = "http://localhost:3000/#/protected/main";       
+    // let validateCodeURL = validateCodeImgURL;
 
     const WrappedNormalLoginForm = Form.create()(LoginForm);
 
@@ -38,9 +32,9 @@ class Login extends React.Component{
                     <span className='login-register'>还没有账户？ <Link to="/register">注册</Link></span>
                  </div>
                  <WrappedNormalLoginForm 
-                 actionURL={actionURL} 
+                 actionURL={login} 
                  loginSuccessURL={loginSuccessURL} 
-                 validateCodeImgURL={validateCodeURL} />            
+                 validateCodeImgURL={validateCodeImgURL} />            
                </div>
                <KtFooterComp />
             </div>

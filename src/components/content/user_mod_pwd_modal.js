@@ -71,13 +71,15 @@ class UserModPwdModal extends React.Component{
     return;    
     };
     if(data.errorCode !== 0){
+        this.setState({
+            validateMode:this.state.validateMode+1,
+        });
         Modal.error({title: '错误！',content:'服务器错误,'+data.message});
         return;
     }
-    if(data.entity !== null){
         //成功拿到数据
-            Modal.success({title: '完成！',content: '密码修改成功。'});            
-        }
+    Modal.success({title: '完成！',content: '密码修改成功。'});            
+      
     }
     //确定修改密码
     makeModPwd=(e)=>{

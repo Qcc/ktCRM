@@ -17,8 +17,8 @@ ReactDOM.render(
     <HashRouter>
       <div>
         <Route exact path="/" component={HomePage}/>
-        {/*<Route path="/protected/main" component={Main}/>  */}
-        <Route path="/main" component={Main}/>          
+        <Route path="/protected/main" component={Main}/>  
+        {/*<Route path="/main" component={Main}/>          */}
         <Route path="/ctbsEnterprise" component={CTBSEnterprise}/>
         <Route path="/ctbsAdv" component={CTBSAdv}/>        
         <Route path="/cloudApp" component={CloudApp}/> 

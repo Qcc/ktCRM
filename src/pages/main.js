@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layout, Menu,Breadcrumb ,Icon} from 'antd';
+import { Layout, Menu,Breadcrumb ,Modal,Icon} from 'antd';
 import KtHeaderComp from '../components/ktheadercomp';
 import KtFooterComp from '../components/ktfootercomp';
 import UserMod from '../components/content/user_mod';
@@ -8,7 +8,7 @@ import LicTemp from '../components/content/lic_temp';
 import LicGenu from '../components/content/lic_genu';
 import InvenDetails from '../components/content/inven_details';
 import SalesDetails from '../components/content/sales_details';
-// import {isLoggedIn,fetch} from '../utils/connect';
+import {isLoggedIn,fetch} from '../utils/connect';
 import '../styles/main.css';
 
 const { SubMenu } = Menu;
@@ -29,7 +29,24 @@ class Main extends React.Component{
     //加载页面时修改title
     componentDidMount() {
         document.title='订货系统-深圳市沟通科技有限公司';
-        window.isLoggedIn=true;            
+        fetch(isLoggedIn,this.isLoggedInUpdate);           
+    }
+    isLoggedInUpdate=(data)=>{
+        if(!data){
+            return;
+        }
+        if(data.entity === 1){
+           window.isLoggedIn=true; 
+        }
+       if(data.entity === 0){
+         window.isLoggedIn=false;  
+         Modal.error({
+         title: '错误！',
+         content: "您还未登录，点击按钮返回主页。",
+         onOk() {window.location.hash ='/';},
+          });
+                         
+        } 
     }
     //点击切换菜单
     handleClick = (e) => {

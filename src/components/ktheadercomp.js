@@ -77,7 +77,7 @@ class KtHeaderComp extends React.Component{
                         </Menu.Item>:''}
                 {window.isLoggedIn || this.props.isloged? 
                          <Menu.Item   key="online" style={{float:'right'}} >
-                            <Link to="/main"><Icon type="user" />已登录</Link>
+                            <Link to="/protected/main"><Icon type="user" />已登录</Link>
                         </Menu.Item>:
                         <Menu.Item className='logonin' key="login" style={{float:'right'}} >
                             <Link to="/login">登录</Link>

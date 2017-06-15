@@ -25,7 +25,7 @@ class Service extends React.Component{
                     <p>为了更好地为客户提供本地化服务，同时降低最终用户的有偿服务价格。沟通科技部分最终用户的售后服务通过分销商体系和系统集成商来提供。
                         由沟通科技对渠道伙伴提供技术支持，确保客户技术问题能得到及时有效解决。</p>
                         <div className="imgwarp">
-                        <img alt="伙伴体系" src={require("../static/parnter.gif")}/>
+                        <img alt="伙伴体系" src={'dinghuo'+require("../static/parnter.gif")}/>
                         </div>
                     <h4>沟通科技渠道分工</h4>
                         <ol>
@@ -34,7 +34,7 @@ class Service extends React.Component{
                         <li>金牌渠道面向自身销售的客户提供技术服务。金牌渠道技术经过沟通科技厂商培训并通过考试获得沟通科技技术能力资格认证后，可为其客户提供技术服务。</li>
                         <li>项目型合作(非签约)渠道若配备沟通科技的技术认证技术人员，也可直接对其客户提供技术服务。</li>
                         </ol>
-                        <img alt="服务等级" src={require("../static/service.gif")}/>                        
+                        <img alt="服务等级" src={'dinghuo'+require("../static/service.gif")}/>                        
                     <h4>渠道伙伴提供的服务</h4>
                         <ol>
                         <li>电话支持服务。各地渠道伙伴根据合作的紧密程度，提供和沟通科技产品相关的电话支持服务，支持内容包括从产品咨询、方案选型，到测试试用、售后服务等，一站式的电话服务支持。</li>
