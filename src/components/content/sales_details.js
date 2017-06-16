@@ -124,7 +124,7 @@ class SalesTable extends React.Component {
       tempDate.push({ 
                       "key":i,
                       "cdKey":list[i].key,
-                      "endUserCompany":list[i].endUserCompany,
+                      "endUserCompany":list[i].customer && list[i].customer.company,
                       "userNumber":list[i].userNumber,
                       "type":list[i].type===1?'新客户':'老客户加点',
                       "actionDatetime":list[i].actionDatetime,
