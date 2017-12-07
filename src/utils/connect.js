@@ -1,7 +1,7 @@
 import reqwest from 'reqwest';
 //根路径
-// let rootUrl = 'http://121.41.36.165:8080/dinghuo'
-let rootUrl = 'http://192.168.200.104:8080/dinghuo'
+let rootUrl = 'http://my.kouton.com/dinghuo'
+// let rootUrl = 'http://192.168.200.104:8080/dinghuo'
 
 /*
 ajax请求函数
@@ -39,7 +39,7 @@ export function fetch(url,callback,params = {},method='POST'){
   };
 
 // export const loginSuccessURL =rootUrl + "/#/protected/main";
-export const loginSuccessURL = "http://localhost:3000/#/protected/main";
+export const loginSuccessURL = rootUrl + "/#/protected/main";
 //伙伴登录
 export const login = rootUrl+"/public/user/login.api";
 //kouton登录
